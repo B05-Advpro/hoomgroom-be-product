@@ -12,4 +12,4 @@ ENV JDBC_DATABASE_USERNAME ${JDBC_DATABASE_USERNAME}
 WORKDIR /app
 COPY ./hoomgroom-product-0.0.1-SNAPSHOT.jar /app
 EXPOSE 8080
-CMD ["java","-jar","hoomgroom-auth-0.0.1-SNAPSHOT.jar"]
+CMD ["java","-jar","hoomgroom-product-0.0.1-SNAPSHOT.jar"]
