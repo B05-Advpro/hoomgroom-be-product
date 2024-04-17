@@ -1,0 +1,114 @@
+name: CI/CD
+
+on:
+  push:
+    branches:
+      - staging
+      - main
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up Java toolchain
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "21"
+          cache: "gradle"
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+      - name: Set up Gradle
+        run: |
+          chmod +x ./gradlew
+          export GRADLE_USER_HOME=${{ github.workspace }}/.gradle
+      - name: Build with Gradle
+        run: |
+          ./gradlew assemble
+          ls
+      - name: Archive artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: jar
+          path: build/libs/*.jar
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    needs: build
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_DB: advpro-2024
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up Java toolchain
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "21"
+          cache: "gradle"
+      - name: Set up Gradle
+        run: |
+          chmod +x ./gradlew
+          export GRADLE_USER_HOME=${{ github.workspace }}/.gradle
+      - name: Run tests
+        run: |
+          gradle check --info --stacktrace
+          gradle test
+          gradle jacocoTestReport
+          grep -Eo "Total.*?([0-9]{1,3})%" build/jacocoHtml/index.html
+        env:
+          PRODUCTION: test
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: build/test-results/test/**/*.xml
+
+  publish:
+    name: Publish
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: java-app
+      - name: Login to Docker Hub
+        run: echo '${{ secrets.DOCKER_PASSWORD }}' | docker login docker.io -u ${{ secrets.REGISTRY_USER }} --password-stdin
+      - name: Build and push Docker image
+        run: |
+          docker build --build-arg PRODUCTION=${{ secrets.PRODUCTION }} --build-arg JDBC_DATABASE_PASSWORD=${{ secrets.JDBC_DATABASE_PASSWORD }} --build-arg JDBC_DATABASE_URL=${{ secrets.JDBC_DATABASE_URL }} --build-arg JDBC_DATABASE_USERNAME=${{ secrets.JDBC_DATABASE_USERNAME }} -t ${{ secrets.REGISTRY_USER }}/${{ secrets.IMAGE_NAME }}:${{ secrets.IMAGE_TAG }} .
+          docker push ${{ secrets.REGISTRY_USER }}/${{ secrets.IMAGE_NAME }}:${{ secrets.IMAGE_TAG }}
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    needs: publish
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.SSH_KEY }}
+      - name: Deploy to GCP
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ${{ secrets.SSH_KEY }} ${{ secrets.GCP_USERNAME }}@${{ secrets.GCP_STATIC_IP }} "
+                      sudo docker container rm -f ${{ secrets.CONTAINER_NAME }} || true &&
+                      sudo docker image rm -f ${{ secrets.REGISTRY_USER }}/${{ secrets.IMAGE_NAME }}:${{ secrets.IMAGE_TAG }} || true &&
+                      sudo docker run --name ${{ secrets.CONTAINER_NAME }} -d -p 80:8080 ${{ secrets.REGISTRY_USER }}/${{ secrets.IMAGE_NAME }}:${{ secrets.IMAGE_TAG }}"
