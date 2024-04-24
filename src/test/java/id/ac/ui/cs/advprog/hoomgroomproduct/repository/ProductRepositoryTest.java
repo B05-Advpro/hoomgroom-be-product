@@ -40,7 +40,7 @@ class ProductRepositoryTest {
         product.setPicture("https://hoomgroom-product.com/single_wooden_chair.jpg");
         product.setRealPrice(75000.0);
         product.setDiscountPrice(50000.0);
-        productRepository.create(product);
+        productRepository.createProduct(product);
 
 
         Iterator<Product> productIterator = productRepository.findAll();
@@ -72,7 +72,7 @@ class ProductRepositoryTest {
         
         product1.setRealPrice(75000.0);
         product1.setDiscountPrice(50000.0);
-        productRepository.create(product1);
+        productRepository.createProduct(product1);
 
 
         Product product2 = new Product();
@@ -82,7 +82,7 @@ class ProductRepositoryTest {
         product2.setPicture("https://hoomgroom-product.com/queen_size_bed.jpg");
         product2.setRealPrice(1000000.0);
         product2.setDiscountPrice(900000.0);
-        productRepository.create(product2);
+        productRepository.createProduct(product2);
 
 
         Iterator<Product> productIterator = productRepository.findAll();
@@ -106,7 +106,7 @@ class ProductRepositoryTest {
         
         product.setRealPrice(75000.0);
         product.setDiscountPrice(50000.0);
-        productRepository.create(product);
+        productRepository.createProduct(product);
 
         Product foundProduct = productRepository.findById(productId);
 
@@ -138,7 +138,7 @@ class ProductRepositoryTest {
         
         product.setRealPrice(75000.0);
         product.setDiscountPrice(50000.0);
-        productRepository.create(product);
+        productRepository.createProduct(product);
 
 
         Product editedProduct = new Product();
@@ -148,7 +148,7 @@ class ProductRepositoryTest {
         editedProduct.setPicture("https://hoomgroom-product.com/double_wooden_chair.jpg");
         editedProduct.setRealPrice(70000.0);
         editedProduct.setDiscountPrice(50000.0);
-        productRepository.edit(editedProduct);
+        productRepository.editProduct(editedProduct);
 
 
         Iterator<Product> productIterator = productRepository.findAll();
@@ -174,7 +174,7 @@ class ProductRepositoryTest {
         
         product1.setRealPrice(75000.0);
         product1.setDiscountPrice(50000.0);
-        productRepository.create(product1);
+        productRepository.createProduct(product1);
 
 
         Product product2 = new Product();
@@ -185,7 +185,7 @@ class ProductRepositoryTest {
         
         product2.setRealPrice(1000000.0);
         product2.setDiscountPrice(900000.0);
-        productRepository.create(product2);
+        productRepository.createProduct(product2);
 
 
         Product editedProduct = new Product();
@@ -195,7 +195,7 @@ class ProductRepositoryTest {
         editedProduct.setPicture("https://hoomgroom-product.com/double_wooden_chair.jpg");        
         editedProduct.setRealPrice(70000.0);
         editedProduct.setDiscountPrice(50000.0);
-        productRepository.edit(editedProduct);
+        productRepository.editProduct(editedProduct);
 
         Iterator<Product> productIterator = productRepository.findAll();
         assertTrue(productIterator.hasNext());
@@ -227,7 +227,7 @@ class ProductRepositoryTest {
         editedProduct.setDiscountPrice(50000.0);
 
         assertThrows(IllegalArgumentException.class, () ->
-                productRepository.edit(editedProduct));
+                productRepository.editProduct(editedProduct));
     }
 
     @Test
@@ -240,7 +240,7 @@ class ProductRepositoryTest {
         editedProduct.setDiscountPrice(50000.0);
 
         assertThrows(IllegalArgumentException.class, () ->
-                productRepository.edit(editedProduct));
+                productRepository.editProduct(editedProduct));
     }
 
     @Test
@@ -253,9 +253,9 @@ class ProductRepositoryTest {
         
         product.setRealPrice(70000.0);
         product.setDiscountPrice(50000.0);
-        productRepository.create(product);
+        productRepository.createProduct(product);
 
-        Product deletedProduct = productRepository.delete(product.getProductId());
+        Product deletedProduct = productRepository.deleteProduct(product.getProductId());
         assertEquals(product, deletedProduct);
 
         Iterator<Product> productIterator  = productRepository.findAll();
@@ -273,7 +273,7 @@ class ProductRepositoryTest {
         
         product1.setRealPrice(75000.0);
         product1.setDiscountPrice(50000.0);
-        productRepository.create(product1);
+        productRepository.createProduct(product1);
 
 
         Product product2 = new Product();
@@ -284,9 +284,9 @@ class ProductRepositoryTest {
         
         product2.setRealPrice(1000000.0);
         product2.setDiscountPrice(900000.0);
-        productRepository.create(product2);
+        productRepository.createProduct(product2);
 
-        Product deletedProduct = productRepository.delete(product1.getProductId());
+        Product deletedProduct = productRepository.deleteProduct(product1.getProductId());
         assertEquals(product1, deletedProduct);
 
         Iterator<Product> productIterator = productRepository.findAll();
@@ -303,13 +303,13 @@ class ProductRepositoryTest {
     @Test
     void testDeleteProductWithNullId() {
         assertThrows(IllegalArgumentException.class, () ->
-                productRepository.delete(null));
+                productRepository.deleteProduct(null));
     }
 
     @Test
     void testDeleteProductNotFound() {
         assertThrows(IllegalArgumentException.class, () ->
-                productRepository.delete(UUID.fromString("6f1238f8-d13a-4e5b-936f-e63523894012")));
+                productRepository.deleteProduct(UUID.fromString("6f1238f8-d13a-4e5b-936f-e63523894012")));
     }
 
 }
