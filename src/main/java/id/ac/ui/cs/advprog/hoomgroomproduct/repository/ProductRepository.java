@@ -15,14 +15,14 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public class ProductRepository {
-    private List<Product> productData = new ArrayList<>();
+    private List<Product> productRepo = new ArrayList<>();
 
 
     public Product createProduct(Product product) {
         if (product.getProductId() == null) {
             UUID uuid = UUID.randomUUID();
             product.setProductId(uuid);
-            productData.add(product);
+            productRepo.add(product);
             return product;
         }
         return null;
@@ -30,27 +30,27 @@ public class ProductRepository {
 
     public Product editProduct(Product editedProduct) {
         UUID productId = editedProduct.getProductId();
-        Product existingProduct = findById(productId);
-        int indexOfProduct = productData.indexOf(existingProduct);
-        productData.set(indexOfProduct, editedProduct);
+        Product searchedProduct = findById(productId);
+        int indexOfProduct = productRepo.indexOf(searchedProduct);
+        productRepo.set(indexOfProduct, editedProduct);
         return editedProduct;
     }
 
 
     public Product deleteProduct(UUID productId) {
         Product product = findById(productId);
-        productData.remove(product);
+        productRepo.remove(product);
         return product;
     }
 
 
     public Iterator<Product> findAll() {
-        return productData.iterator();
+        return productRepo.iterator();
     }
 
 
     public Product findById(UUID productId) {
-        return productData.stream()
+        return productRepo.stream()
                 .filter(product -> product.getProductId().equals(productId))
                 .findFirst()
                 .orElseThrow(() ->
