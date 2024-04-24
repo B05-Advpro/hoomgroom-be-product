@@ -15,14 +15,4 @@ public class Product {
     private String picture;
     private double realPrice;
     private double discountPrice;
-
-    public Product(String name, List<String> tag, String description, String imgUrl, double realPrice, double discountPrice) {
-        this.productId = UUID.randomUUID().toString();
-        this.productName = name;
-        this.tag = tag;
-        this.description = description;
-        this.picture = imgUrl;
-        this.realPrice = realPrice;
-        this.discountPrice = discountPrice;
-    }
 }
