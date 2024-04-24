@@ -8,7 +8,7 @@ import java.util.UUID;
 
 @Getter @Setter
 public class Product {
-    private String productId;
+    private UUID productId;
     private String productName;
     private List<String> tag;
     private String description;
