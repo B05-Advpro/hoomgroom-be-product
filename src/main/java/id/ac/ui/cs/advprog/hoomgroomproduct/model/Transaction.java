@@ -2,16 +2,24 @@ package id.ac.ui.cs.advprog.hoomgroomproduct.model;
 
 import id.ac.ui.cs.advprog.hoomgroomproduct.enums.DeliveryMethod;
 import id.ac.ui.cs.advprog.hoomgroomproduct.enums.DeliveryStatus;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Transient;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.util.Map;
 import java.util.UUID;
 
+@Entity
 @Getter
-@Setter
 public class Transaction {
+
+    @Id
+    @GeneratedValue
     private UUID id;
+
+    @Transient
     private Map<UUID, Integer> products;
     private double totalPrice;
     private String promoCodeUsed;
@@ -19,6 +27,8 @@ public class Transaction {
     private String deliveryStatus;
     private String deliveryCode;
     private String deliveryMethod;
+
+    public Transaction() {}
 
     public Transaction(Map<UUID, Integer> products, String promoCodeUsed, UUID pembeli, String deliveryMethod) {
         this.id = UUID.randomUUID();
