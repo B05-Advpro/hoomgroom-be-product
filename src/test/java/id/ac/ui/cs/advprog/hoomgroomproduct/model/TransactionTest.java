@@ -20,8 +20,12 @@ class TransactionTest {
         this.products = new HashMap<>();
         this.products.put(UUID.fromString("ca1c1b7d-f5aa-4573-aeff-d01665cc88c8"), 1);
 
-        this.transaction = new Transaction(products, "BELANJAHEMAT20",
-                UUID.fromString("4f59c670-f83f-4d41-981f-37ee660a6e4c"), "MOTOR");
+        this.transaction = new TransactionBuilder()
+                .setProducts(this.products)
+                .setPromoCodeUsed("BELANJAHEMAT20")
+                .setPembeli(UUID.fromString("4f59c670-f83f-4d41-981f-37ee660a6e4c"))
+                .setDeliveryMethod("MOTOR")
+                .build();
     }
 
     @Test
@@ -37,8 +41,12 @@ class TransactionTest {
         this.products.clear();
 
         assertThrows(IllegalArgumentException.class, () -> {
-            Transaction newTransaction = new Transaction(this.products, "BElANJAHEMAT20",
-                    UUID.fromString("4f59c670-f83f-4d41-981f-37ee660a6e4c"), DeliveryMethod.MOTOR.getValue());
+            this.transaction = new TransactionBuilder()
+                    .setProducts(this.products)
+                    .setPromoCodeUsed("BELANJAHEMAT20")
+                    .setPembeli(UUID.fromString("4f59c670-f83f-4d41-981f-37ee660a6e4c"))
+                    .setDeliveryMethod("MOTOR")
+                    .build();
         });
     }
     @Test
@@ -74,8 +82,12 @@ class TransactionTest {
     @Test
     void testInvalidDeliveryMethod() {
         assertThrows(IllegalArgumentException.class, () -> {
-            Transaction newTransaction = new Transaction(products, "BElANJAHEMAT20",
-                    UUID.fromString("4f59c670-f83f-4d41-981f-37ee660a6e4c"), "BECAK");
+            this.transaction = new TransactionBuilder()
+                    .setProducts(this.products)
+                    .setPromoCodeUsed("BELANJAHEMAT20")
+                    .setPembeli(UUID.fromString("4f59c670-f83f-4d41-981f-37ee660a6e4c"))
+                    .setDeliveryMethod("BECAK")
+                    .build();
         });
     }
 }
