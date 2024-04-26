@@ -1,9 +1,10 @@
 package id.ac.ui.cs.advprog.hoomgroomproduct.model;
 
+import id.ac.ui.cs.advprog.hoomgroomproduct.enums.DeliveryMethod;
+import id.ac.ui.cs.advprog.hoomgroomproduct.enums.DeliveryStatus;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Arrays;
 import java.util.Map;
 import java.util.UUID;
 
@@ -30,26 +31,24 @@ public class Transaction {
 
         this.promoCodeUsed = promoCodeUsed;
         this.pembeli = pembeli;
-        this.deliveryStatus = "MENUNGGU VERIFIKASI";
+        this.deliveryStatus = DeliveryStatus.MENUNGGU_VERIFIKASI.getValue();
         this.deliveryCode = "";
         this.setDeliveryMethod(deliveryMethod);
     }
 
     public void setDeliveryStatus(String status) {
-        String[] statusList = {"MENUNGGU VERIFIKASI", "DIPROSES", "DIKIRIM", "TIBA", "SELESAI"};
-        if (Arrays.stream(statusList).noneMatch(item -> (item.equals(status)))) {
-            throw new IllegalArgumentException();
-        } else {
+        if (DeliveryStatus.contains(status)) {
             this.deliveryStatus = status;
+        } else {
+            throw new IllegalArgumentException();
         }
     }
 
     public void setDeliveryMethod(String method) {
-        String[] statusList = {"MOTOR", "TRUK", "PESAWAT"};
-        if (Arrays.stream(statusList).noneMatch(item -> (item.equals(method)))) {
-            throw new IllegalArgumentException();
-        } else {
+        if (DeliveryMethod.contains(method)) {
             this.deliveryMethod = method;
+        } else {
+            throw new IllegalArgumentException();
         }
     }
 }

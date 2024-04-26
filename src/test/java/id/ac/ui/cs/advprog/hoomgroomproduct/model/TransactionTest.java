@@ -1,5 +1,7 @@
 package id.ac.ui.cs.advprog.hoomgroomproduct.model;
 
+import id.ac.ui.cs.advprog.hoomgroomproduct.enums.DeliveryMethod;
+import id.ac.ui.cs.advprog.hoomgroomproduct.enums.DeliveryStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -36,7 +38,7 @@ class TransactionTest {
 
         assertThrows(IllegalArgumentException.class, () -> {
             Transaction newTransaction = new Transaction(this.products, "BElANJAHEMAT20",
-                    UUID.fromString("4f59c670-f83f-4d41-981f-37ee660a6e4c"), "MOTOR");
+                    UUID.fromString("4f59c670-f83f-4d41-981f-37ee660a6e4c"), DeliveryMethod.MOTOR.getValue());
         });
     }
     @Test
@@ -51,7 +53,7 @@ class TransactionTest {
 
     @Test
     void testGetDeliveryStatus() {
-        assertEquals("MENUNGGU VERIFIKASI", this.transaction.getDeliveryStatus());
+        assertEquals(DeliveryStatus.MENUNGGU_VERIFIKASI.getValue(), this.transaction.getDeliveryStatus());
     }
 
     @Test
@@ -66,7 +68,7 @@ class TransactionTest {
 
     @Test
     void testGetDeliveryMethod() {
-        assertEquals("MOTOR", this.transaction.getDeliveryMethod());
+        assertEquals(DeliveryMethod.MOTOR.getValue(), this.transaction.getDeliveryMethod());
     }
 
     @Test
