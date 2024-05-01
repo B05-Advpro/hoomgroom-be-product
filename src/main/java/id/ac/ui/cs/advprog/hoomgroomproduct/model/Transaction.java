@@ -30,7 +30,7 @@ public class Transaction {
 
     public Transaction() {}
 
-    public Transaction(List<TransactionItem> products, String promoCodeUsed, UUID pembeli, String deliveryMethod) {
+    public Transaction(List<TransactionItem> products, double totalPrice, String promoCodeUsed, UUID pembeli, String deliveryMethod) {
         this.id = UUID.randomUUID();
 
         if (products.isEmpty()) {
@@ -38,7 +38,7 @@ public class Transaction {
         } else {
             this.products = products;
         }
-
+        this.totalPrice = totalPrice;
         this.promoCodeUsed = promoCodeUsed;
         this.pembeli = pembeli;
         this.deliveryStatus = DeliveryStatus.MENUNGGU_VERIFIKASI.getValue();

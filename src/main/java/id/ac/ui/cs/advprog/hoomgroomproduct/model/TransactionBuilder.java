@@ -5,12 +5,18 @@ import java.util.UUID;
 
 public class TransactionBuilder {
     private List<TransactionItem> products;
+    private double totalPrice;
     private String promoCodeUsed;
     private UUID pembeli;
     private String deliveryMethod;
 
     public TransactionBuilder setProducts(List<TransactionItem> products) {
         this.products = products;
+        return this;
+    }
+
+    public TransactionBuilder setTotalPrice(double totalPrice) {
+        this.totalPrice = totalPrice;
         return this;
     }
 
@@ -30,6 +36,6 @@ public class TransactionBuilder {
     }
 
     public Transaction build() {
-        return new Transaction(products, promoCodeUsed, pembeli, deliveryMethod);
+        return new Transaction(products, totalPrice, promoCodeUsed, pembeli, deliveryMethod);
     }
 }
