@@ -24,7 +24,6 @@ import static org.mockito.Mockito.*;
 class TransactionServiceImplTest {
     Transaction transaction;
 
-    List<TransactionItem> products;
     @Mock
     TransactionRepository transactionRepository;
 
@@ -33,13 +32,13 @@ class TransactionServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        this.products = new ArrayList<>();
+        List<TransactionItem> products = new ArrayList<>();
         TransactionItem product = new TransactionItem(UUID.fromString("ca1c1b7d-f5aa-4573-aeff-d01665cc88c8"),
                 "Product 1", 15000, 2);
-        this.products.add(product);
+        products.add(product);
 
         this.transaction = new TransactionBuilder()
-                .setProducts(this.products)
+                .setProducts(products)
                 .setPromoCodeUsed("BELANJAHEMAT20")
                 .setPembeli(UUID.fromString("4f59c670-f83f-4d41-981f-37ee660a6e4c"))
                 .setDeliveryMethod("MOTOR")
@@ -68,6 +67,7 @@ class TransactionServiceImplTest {
         Transaction result = transactionService.create(request);
         verify(transactionRepository, times(1)).save(any(Transaction.class));
         assertNotNull(result);
+        assertEquals(30000, result.getTotalPrice());
         assertEquals(this.transaction.getPromoCodeUsed(), result.getPromoCodeUsed());
         assertEquals(this.transaction.getPembeli(), result.getPembeli());
         assertEquals(this.transaction.getDeliveryMethod(), result.getDeliveryMethod());
