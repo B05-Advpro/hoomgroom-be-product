@@ -1,5 +1,6 @@
 package id.ac.ui.cs.advprog.hoomgroomproduct.model;
 
+import lombok.Builder;
 import lombok.Getter;
 
 import java.util.UUID;

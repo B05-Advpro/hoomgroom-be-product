@@ -8,7 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Transient;
 import lombok.Getter;
 
-import java.util.Map;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -20,7 +20,7 @@ public class Transaction {
     private UUID id;
 
     @Transient
-    private Map<UUID, Integer> products;
+    private List<TransactionItem> products;
     private double totalPrice;
     private String promoCodeUsed;
     private UUID pembeli;
@@ -30,7 +30,7 @@ public class Transaction {
 
     public Transaction() {}
 
-    public Transaction(Map<UUID, Integer> products, String promoCodeUsed, UUID pembeli, String deliveryMethod) {
+    public Transaction(List<TransactionItem> products, String promoCodeUsed, UUID pembeli, String deliveryMethod) {
         this.id = UUID.randomUUID();
 
         if (products.isEmpty()) {

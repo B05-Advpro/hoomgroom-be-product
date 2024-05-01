@@ -2,6 +2,7 @@ package id.ac.ui.cs.advprog.hoomgroomproduct.service;
 
 import id.ac.ui.cs.advprog.hoomgroomproduct.model.Transaction;
 import id.ac.ui.cs.advprog.hoomgroomproduct.model.TransactionBuilder;
+import id.ac.ui.cs.advprog.hoomgroomproduct.model.TransactionItem;
 import id.ac.ui.cs.advprog.hoomgroomproduct.repository.TransactionRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,8 +11,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -21,7 +22,7 @@ import static org.mockito.Mockito.*;
 class TransactionServiceImplTest {
     Transaction transaction;
 
-    Map<UUID, Integer> products;
+    List<TransactionItem> products;
     @Mock
     TransactionRepository transactionRepository;
 
@@ -30,8 +31,10 @@ class TransactionServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        this.products = new HashMap<>();
-        this.products.put(UUID.fromString("ca1c1b7d-f5aa-4573-aeff-d01665cc88c8"), 1);
+        this.products = new ArrayList<>();
+        TransactionItem product = new TransactionItem(UUID.fromString("ca1c1b7d-f5aa-4573-aeff-d01665cc88c8"),
+                "Product 1", 15000, 2);
+        this.products.add(product);
 
         this.transaction = new TransactionBuilder()
                 .setProducts(this.products)

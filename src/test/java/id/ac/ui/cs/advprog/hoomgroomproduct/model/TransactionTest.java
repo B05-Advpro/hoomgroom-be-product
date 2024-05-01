@@ -5,20 +5,23 @@ import id.ac.ui.cs.advprog.hoomgroomproduct.enums.DeliveryStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 class TransactionTest {
     Transaction transaction;
-    Map<UUID, Integer> products;
+    List<TransactionItem> products;
 
 
     @BeforeEach
     void setUp() {
-        this.products = new HashMap<>();
-        this.products.put(UUID.fromString("ca1c1b7d-f5aa-4573-aeff-d01665cc88c8"), 1);
+        this.products = new ArrayList<>();
+        TransactionItem product1 = new TransactionItem(UUID.fromString("ca1c1b7d-f5aa-4573-aeff-d01665cc88c8"),
+                "Product 1", 15000, 2);
+        TransactionItem product2 = new TransactionItem(UUID.fromString("df6c1b7d-f5aa-4573-aeff-d01665cc88c8"),
+                "Product 2", 25000, 4);
+        this.products.add(product1);
+        this.products.add(product2);
 
         this.transaction = new TransactionBuilder()
                 .setProducts(this.products)
@@ -30,10 +33,12 @@ class TransactionTest {
 
     @Test
     void testGetProducts() {
-        Map<UUID, Integer> savedProducts = this.transaction.getProducts();
-        assertTrue(savedProducts.containsKey(UUID.fromString("ca1c1b7d-f5aa-4573-aeff-d01665cc88c8")));
-        int quantity = savedProducts.get(UUID.fromString("ca1c1b7d-f5aa-4573-aeff-d01665cc88c8"));
-        assertEquals(1, quantity);
+        List<TransactionItem> savedProducts = this.transaction.getProducts();
+        assertSame(this.products, savedProducts);
+        assertEquals(this.products.size(), savedProducts.size());
+        for (int i = 0; i < this.products.size(); i++) {
+            assertSame(this.products.get(i), savedProducts.get(i));
+        }
     }
 
     @Test

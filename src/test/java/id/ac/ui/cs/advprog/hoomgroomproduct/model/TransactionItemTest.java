@@ -13,7 +13,7 @@ class TransactionItemTest {
     @BeforeEach
     void setUp() {
         transactionItem = new TransactionItem(UUID.fromString("ca1c1b7d-f5aa-4573-aeff-d01665cc88c8"),
-                "Product 1", 15000, 1);
+                "Product 1", 15000, 2);
     }
 
     @Test
@@ -33,6 +33,6 @@ class TransactionItemTest {
 
     @Test
     void testGetQuantity() {
-        assertEquals(1, transactionItem.getQuantity());
+        assertEquals(2, transactionItem.getQuantity());
     }
 }

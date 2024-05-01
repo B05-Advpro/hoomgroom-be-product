@@ -1,15 +1,15 @@
 package id.ac.ui.cs.advprog.hoomgroomproduct.model;
 
-import java.util.Map;
+import java.util.List;
 import java.util.UUID;
 
 public class TransactionBuilder {
-    private Map<UUID, Integer> products;
+    private List<TransactionItem> products;
     private String promoCodeUsed;
     private UUID pembeli;
     private String deliveryMethod;
 
-    public TransactionBuilder setProducts(Map<UUID, Integer> products) {
+    public TransactionBuilder setProducts(List<TransactionItem> products) {
         this.products = products;
         return this;
     }
