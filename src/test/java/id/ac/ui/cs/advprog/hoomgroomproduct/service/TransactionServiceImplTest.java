@@ -46,10 +46,28 @@ class TransactionServiceImplTest {
 
     @Test
     void testCreateTransaction() {
+        TransactionItemRequestDto requestProduct = new TransactionItemRequestDto();
+        requestProduct.setId("ca1c1b7d-f5aa-4573-aeff-d01665cc88c8");
+        requestProduct.setName("Product 1");
+        requestProduct.setPrice(15000);
+        requestProduct.setQuantity(2);
+
+        List<TransactionItemRequestDto> requestProducts = new ArrayList<>();
+        requestProducts.add(requestProduct);
+
+        TransactionRequestDto request = new TransactionRequestDto();
+        request.setProducts(requestProducts);
+        request.setPembeli("4f59c670-f83f-4d41-981f-37ee660a6e4c");
+        request.setPromoCodeUsed("BELANJAHEMAT20");
+        request.setDeliveryMethod("MOTOR");
+
         doReturn(this.transaction).when(transactionRepository).save(any(Transaction.class));
 
-        Transaction result = transactionService.create(this.transaction);
-        verify(transactionRepository, times(1)).save(this.transaction);
-        assertEquals(this.transaction.getId(), result.getId());
+        Transaction result = transactionService.create(request);
+        verify(transactionRepository, times(1)).save(any(Transaction.class));
+        assertNotNull(result);
+        assertEquals(this.transaction.getPromoCodeUsed(), result.getPromoCodeUsed());
+        assertEquals(this.transaction.getPembeli(), result.getPembeli());
+        assertEquals(this.transaction.getDeliveryMethod(), result.getDeliveryMethod());
     }
 }
