@@ -2,35 +2,32 @@ package id.ac.ui.cs.advprog.hoomgroomproduct.model;
 
 import id.ac.ui.cs.advprog.hoomgroomproduct.enums.DeliveryMethod;
 import id.ac.ui.cs.advprog.hoomgroomproduct.enums.DeliveryStatus;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Transient;
+import jakarta.persistence.*;
 import lombok.Getter;
 
-import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
-@Entity
 @Getter
+@Entity
 public class Transaction {
-
     @Id
     @GeneratedValue
     private UUID id;
 
-    @Transient
-    private List<TransactionItem> products;
+    @OneToMany(mappedBy = "transaction", cascade = CascadeType.ALL)
+    @MapKey(name = "productId")
+    private Map<UUID, TransactionItem> products;
     private double totalPrice;
     private String promoCodeUsed;
-    private UUID pembeli;
+    private UUID userId;
     private String deliveryStatus;
     private String deliveryCode;
     private String deliveryMethod;
 
     public Transaction() {}
 
-    public Transaction(List<TransactionItem> products, double totalPrice, String promoCodeUsed, UUID pembeli, String deliveryMethod) {
+    public Transaction(Map<UUID, TransactionItem> products, double totalPrice, String promoCodeUsed, UUID userId, String deliveryMethod) {
         this.id = UUID.randomUUID();
 
         if (products.isEmpty()) {
@@ -40,7 +37,7 @@ public class Transaction {
         }
         this.totalPrice = totalPrice;
         this.promoCodeUsed = promoCodeUsed;
-        this.pembeli = pembeli;
+        this.userId = userId;
         this.deliveryStatus = DeliveryStatus.MENUNGGU_VERIFIKASI.getValue();
         this.deliveryCode = "";
         this.setDeliveryMethod(deliveryMethod);

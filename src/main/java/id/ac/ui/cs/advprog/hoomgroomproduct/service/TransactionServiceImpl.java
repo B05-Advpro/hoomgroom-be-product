@@ -9,9 +9,7 @@ import id.ac.ui.cs.advprog.hoomgroomproduct.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class TransactionServiceImpl implements TransactionService {
@@ -21,27 +19,29 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public Transaction create(TransactionRequestDto request) {
-        UUID pembeli = UUID.fromString(request.getPembeli());
+        UUID pembeli = UUID.fromString(request.getUserId());
         String promoCodeUsed = request.getPromoCodeUsed();
         String deliverMethod = request.getDeliveryMethod();
-        List<TransactionItemRequestDto> requestProducts = request.getProducts();
-        List<TransactionItem> products = new ArrayList<>();
+        Map<String, TransactionItemRequestDto> requestProducts = request.getProducts();
+        Map<UUID, TransactionItem> products = new HashMap<>();
 
-        for (TransactionItemRequestDto product : requestProducts) {
-            TransactionItem transactionItem = new TransactionItem(UUID.fromString(product.getId()),
+        for (Map.Entry<String, TransactionItemRequestDto> entry : requestProducts.entrySet()) {
+            TransactionItemRequestDto product = entry.getValue();
+            TransactionItem transactionItem = new TransactionItem(UUID.fromString(product.getProductId()),
                     product.getName(),
                     product.getPrice(),
                     product.getQuantity());
-            products.add(transactionItem);
+            products.put(UUID.fromString(product.getProductId()) ,transactionItem);
         }
 
         double totalPrice = 0;
-        for (TransactionItem product : products) {
+        for (Map.Entry<UUID, TransactionItem> entry : products.entrySet()) {
+            TransactionItem product = entry.getValue();
             totalPrice += product.getPrice() * product.getQuantity();
         }
 
         Transaction transaction = new TransactionBuilder()
-                .setPembeli(pembeli)
+                .setUserId(pembeli)
                 .setProducts(products)
                 .setTotalPrice(totalPrice)
                 .setDeliveryMethod(deliverMethod)

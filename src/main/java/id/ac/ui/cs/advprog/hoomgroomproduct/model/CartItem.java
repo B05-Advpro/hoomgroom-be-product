@@ -2,29 +2,29 @@ package id.ac.ui.cs.advprog.hoomgroomproduct.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.UUID;
 
 @Getter
+@Setter
 @Entity
-public class TransactionItem {
+public class CartItem {
     @Id
-    @GeneratedValue
     private UUID productId;
-
     private String name;
     private double price;
     private int quantity;
 
     @ManyToOne
-    @JoinColumn(name = "transaction_id")
-    private Transaction transaction;
+    @JoinColumn(name = "cart_id")
+    private Cart cart;
 
-    public TransactionItem() {
+    public CartItem() {
 
     }
 
-    public TransactionItem(UUID productId, String name, double price, int quantity) {
+    public CartItem(UUID productId, String name, double price, int quantity) {
         this.productId = productId;
         this.name = name;
         this.price = price;
