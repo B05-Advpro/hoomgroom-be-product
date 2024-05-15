@@ -13,9 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -32,15 +30,15 @@ class TransactionServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        List<TransactionItem> products = new ArrayList<>();
+        Map<UUID, TransactionItem> products = new HashMap<>();
         TransactionItem product = new TransactionItem(UUID.fromString("ca1c1b7d-f5aa-4573-aeff-d01665cc88c8"),
                 "Product 1", 15000, 2);
-        products.add(product);
+        products.put(UUID.fromString("ca1c1b7d-f5aa-4573-aeff-d01665cc88c8"), product);
 
         this.transaction = new TransactionBuilder()
                 .setProducts(products)
                 .setPromoCodeUsed("BELANJAHEMAT20")
-                .setPembeli(UUID.fromString("4f59c670-f83f-4d41-981f-37ee660a6e4c"))
+                .setUserId(UUID.fromString("4f59c670-f83f-4d41-981f-37ee660a6e4c"))
                 .setDeliveryMethod("MOTOR")
                 .build();
     }
@@ -48,17 +46,17 @@ class TransactionServiceImplTest {
     @Test
     void testCreateTransaction() {
         TransactionItemRequestDto requestProduct = new TransactionItemRequestDto();
-        requestProduct.setId("ca1c1b7d-f5aa-4573-aeff-d01665cc88c8");
+        requestProduct.setProductId("ca1c1b7d-f5aa-4573-aeff-d01665cc88c8");
         requestProduct.setName("Product 1");
         requestProduct.setPrice(15000);
         requestProduct.setQuantity(2);
 
-        List<TransactionItemRequestDto> requestProducts = new ArrayList<>();
-        requestProducts.add(requestProduct);
+        Map<String, TransactionItemRequestDto> requestProducts = new HashMap<>();
+        requestProducts.put("ca1c1b7d-f5aa-4573-aeff-d01665cc88c8", requestProduct);
 
         TransactionRequestDto request = new TransactionRequestDto();
         request.setProducts(requestProducts);
-        request.setPembeli("4f59c670-f83f-4d41-981f-37ee660a6e4c");
+        request.setUserId("4f59c670-f83f-4d41-981f-37ee660a6e4c");
         request.setPromoCodeUsed("BELANJAHEMAT20");
         request.setDeliveryMethod("MOTOR");
 
@@ -69,7 +67,7 @@ class TransactionServiceImplTest {
         assertNotNull(result);
         assertEquals(30000, result.getTotalPrice());
         assertEquals(this.transaction.getPromoCodeUsed(), result.getPromoCodeUsed());
-        assertEquals(this.transaction.getPembeli(), result.getPembeli());
+        assertEquals(this.transaction.getUserId(), result.getUserId());
         assertEquals(this.transaction.getDeliveryMethod(), result.getDeliveryMethod());
     }
 }

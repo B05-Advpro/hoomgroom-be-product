@@ -5,7 +5,7 @@ import id.ac.ui.cs.advprog.hoomgroomproduct.enums.DeliveryStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 
-import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Getter
@@ -16,17 +16,18 @@ public class Transaction {
     private UUID id;
 
     @OneToMany(mappedBy = "transaction", cascade = CascadeType.ALL)
-    private List<TransactionItem> products;
+    @MapKey(name = "productId")
+    private Map<UUID, TransactionItem> products;
     private double totalPrice;
     private String promoCodeUsed;
-    private UUID pembeli;
+    private UUID userId;
     private String deliveryStatus;
     private String deliveryCode;
     private String deliveryMethod;
 
     public Transaction() {}
 
-    public Transaction(List<TransactionItem> products, double totalPrice, String promoCodeUsed, UUID pembeli, String deliveryMethod) {
+    public Transaction(Map<UUID, TransactionItem> products, double totalPrice, String promoCodeUsed, UUID userId, String deliveryMethod) {
         this.id = UUID.randomUUID();
 
         if (products.isEmpty()) {
@@ -36,7 +37,7 @@ public class Transaction {
         }
         this.totalPrice = totalPrice;
         this.promoCodeUsed = promoCodeUsed;
-        this.pembeli = pembeli;
+        this.userId = userId;
         this.deliveryStatus = DeliveryStatus.MENUNGGU_VERIFIKASI.getValue();
         this.deliveryCode = "";
         this.setDeliveryMethod(deliveryMethod);

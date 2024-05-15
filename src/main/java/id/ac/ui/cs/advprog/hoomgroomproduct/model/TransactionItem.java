@@ -10,22 +10,22 @@ import java.util.UUID;
 public class TransactionItem {
     @Id
     @GeneratedValue
-    private UUID id;
+    private UUID productId;
 
     private String name;
     private double price;
     private int quantity;
 
     @ManyToOne
-    @JoinColumn(name = "cart_id")
+    @JoinColumn(name = "transaction_id")
     private Transaction transaction;
 
     public TransactionItem() {
 
     }
 
-    public TransactionItem(UUID id, String name, double price, int quantity) {
-        this.id = id;
+    public TransactionItem(UUID productId, String name, double price, int quantity) {
+        this.productId = productId;
         this.name = name;
         this.price = price;
         this.quantity = quantity;
