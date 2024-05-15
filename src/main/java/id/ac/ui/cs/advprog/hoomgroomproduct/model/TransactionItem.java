@@ -1,16 +1,28 @@
 package id.ac.ui.cs.advprog.hoomgroomproduct.model;
 
-import lombok.Builder;
+import jakarta.persistence.*;
 import lombok.Getter;
 
 import java.util.UUID;
 
 @Getter
+@Entity
 public class TransactionItem {
-    private final UUID id;
-    private final String name;
-    private final double price;
-    private final int quantity;
+    @Id
+    @GeneratedValue
+    private UUID id;
+
+    private String name;
+    private double price;
+    private int quantity;
+
+    @ManyToOne
+    @JoinColumn(name = "cart_id")
+    private Transaction transaction;
+
+    public TransactionItem() {
+
+    }
 
     public TransactionItem(UUID id, String name, double price, int quantity) {
         this.id = id;

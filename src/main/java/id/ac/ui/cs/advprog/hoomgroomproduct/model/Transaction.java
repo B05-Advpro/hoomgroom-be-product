@@ -2,24 +2,20 @@ package id.ac.ui.cs.advprog.hoomgroomproduct.model;
 
 import id.ac.ui.cs.advprog.hoomgroomproduct.enums.DeliveryMethod;
 import id.ac.ui.cs.advprog.hoomgroomproduct.enums.DeliveryStatus;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Transient;
+import jakarta.persistence.*;
 import lombok.Getter;
 
 import java.util.List;
 import java.util.UUID;
 
-@Entity
 @Getter
+@Entity
 public class Transaction {
-
     @Id
     @GeneratedValue
     private UUID id;
 
-    @Transient
+    @OneToMany(mappedBy = "transaction", cascade = CascadeType.ALL)
     private List<TransactionItem> products;
     private double totalPrice;
     private String promoCodeUsed;
