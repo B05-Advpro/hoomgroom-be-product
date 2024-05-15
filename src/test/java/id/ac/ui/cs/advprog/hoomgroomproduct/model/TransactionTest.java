@@ -24,7 +24,7 @@ class TransactionTest {
         this.products.put(UUID.fromString("df6c1b7d-f5aa-4573-aeff-d01665cc88c8"), product2);
 
         this.transaction = new TransactionBuilder()
-                .setProducts(this.products)
+                .setItems(this.products)
                 .setTotalPrice(130000)
                 .setPromoCodeUsed("BELANJAHEMAT20")
                 .setUserId(UUID.fromString("4f59c670-f83f-4d41-981f-37ee660a6e4c"))
@@ -34,8 +34,8 @@ class TransactionTest {
 
     @Test
     void testGetProducts() {
-        Map<UUID, TransactionItem> savedProducts = this.transaction.getProducts();
-        assertEquals(this.products, savedProducts);
+        List<TransactionItem> savedProducts = this.transaction.getItems();
+        assertSame(this.products, savedProducts);
         assertEquals(this.products.size(), savedProducts.size());
         for (Map.Entry<UUID, TransactionItem> entry : this.products.entrySet()) {
             assertSame(this.products.get(entry.getKey()), savedProducts.get(entry.getKey()));
@@ -48,7 +48,7 @@ class TransactionTest {
 
         assertThrows(IllegalArgumentException.class, () -> {
             this.transaction = new TransactionBuilder()
-                    .setProducts(this.products)
+                    .setItems(this.products)
                     .setTotalPrice(130000)
                     .setPromoCodeUsed("BELANJAHEMAT20")
                     .setUserId(UUID.fromString("4f59c670-f83f-4d41-981f-37ee660a6e4c"))
@@ -95,7 +95,7 @@ class TransactionTest {
     void testInvalidDeliveryMethod() {
         assertThrows(IllegalArgumentException.class, () -> {
             this.transaction = new TransactionBuilder()
-                    .setProducts(this.products)
+                    .setItems(this.products)
                     .setTotalPrice(130000)
                     .setPromoCodeUsed("BELANJAHEMAT20")
                     .setUserId(UUID.fromString("4f59c670-f83f-4d41-981f-37ee660a6e4c"))

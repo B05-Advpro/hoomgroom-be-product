@@ -42,7 +42,7 @@ public class TransactionServiceImpl implements TransactionService {
 
         Transaction transaction = new TransactionBuilder()
                 .setUserId(pembeli)
-                .setProducts(products)
+                .setItems(products)
                 .setTotalPrice(totalPrice)
                 .setDeliveryMethod(deliverMethod)
                 .setPromoCodeUsed(promoCodeUsed)

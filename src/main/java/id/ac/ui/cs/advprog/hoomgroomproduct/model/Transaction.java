@@ -16,8 +16,7 @@ public class Transaction {
     private UUID id;
 
     @OneToMany(mappedBy = "transaction", cascade = CascadeType.ALL)
-    @MapKey(name = "productId")
-    private Map<UUID, TransactionItem> products;
+    private List<TransactionItem> items;
     private double totalPrice;
     private String promoCodeUsed;
     private UUID userId;
@@ -27,13 +26,13 @@ public class Transaction {
 
     public Transaction() {}
 
-    public Transaction(Map<UUID, TransactionItem> products, double totalPrice, String promoCodeUsed, UUID userId, String deliveryMethod) {
+    public Transaction(List<TransactionItem> items, double totalPrice, String promoCodeUsed, UUID userId, String deliveryMethod) {
         this.id = UUID.randomUUID();
 
-        if (products.isEmpty()) {
+        if (items.isEmpty()) {
             throw new IllegalArgumentException();
         } else {
-            this.products = products;
+            this.items = items;
         }
         this.totalPrice = totalPrice;
         this.promoCodeUsed = promoCodeUsed;

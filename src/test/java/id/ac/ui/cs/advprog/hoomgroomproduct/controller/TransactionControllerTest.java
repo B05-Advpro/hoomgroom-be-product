@@ -41,7 +41,7 @@ class TransactionControllerTest {
         products.put(UUID.fromString("ca1c1b7d-f5aa-4573-aeff-d01665cc88c8"), product);
 
         this.transaction = new TransactionBuilder()
-                .setProducts(products)
+                .setItems(products)
                 .setPromoCodeUsed("BELANJAHEMAT20")
                 .setUserId(UUID.fromString("4f59c670-f83f-4d41-981f-37ee660a6e4c"))
                 .setDeliveryMethod("MOTOR")
