@@ -1,7 +1,6 @@
 package id.ac.ui.cs.advprog.hoomgroomproduct.model;
 
 import id.ac.ui.cs.advprog.hoomgroomproduct.enums.DeliveryMethod;
-import id.ac.ui.cs.advprog.hoomgroomproduct.enums.DeliveryStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -69,16 +68,6 @@ class TransactionTest {
     @Test
     void testGetPembeli() {
         assertEquals(UUID.fromString("4f59c670-f83f-4d41-981f-37ee660a6e4c"), this.transaction.getPembeli());
-    }
-
-    @Test
-    void testGetDeliveryStatus() {
-        assertEquals(DeliveryStatus.MENUNGGU_VERIFIKASI.getValue(), this.transaction.getDeliveryStatus());
-    }
-
-    @Test
-    void testSetInvalidDeliveryStatus() {
-        assertThrows(IllegalArgumentException.class, () -> this.transaction.setDeliveryStatus("MEOW"));
     }
 
     @Test

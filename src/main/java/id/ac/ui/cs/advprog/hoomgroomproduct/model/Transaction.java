@@ -1,7 +1,8 @@
 package id.ac.ui.cs.advprog.hoomgroomproduct.model;
 
 import id.ac.ui.cs.advprog.hoomgroomproduct.enums.DeliveryMethod;
-import id.ac.ui.cs.advprog.hoomgroomproduct.enums.DeliveryStatus;
+import id.ac.ui.cs.advprog.hoomgroomproduct.model.states.TransactionMenungguVerifikasi;
+import id.ac.ui.cs.advprog.hoomgroomproduct.model.states.TransactionStatus;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -24,13 +25,16 @@ public class Transaction {
     private double totalPrice;
     private String promoCodeUsed;
     private UUID pembeli;
-    private String deliveryStatus;
     private String deliveryCode;
     private String deliveryMethod;
+    private TransactionStatus transactionStatus;
 
-    public Transaction() {}
+    public Transaction() {
 
-    public Transaction(List<TransactionItem> products, double totalPrice, String promoCodeUsed, UUID pembeli, String deliveryMethod) {
+    }
+
+    public Transaction(List<TransactionItem> products, double totalPrice,
+                       String promoCodeUsed, UUID pembeli, String deliveryMethod) {
         this.id = UUID.randomUUID();
 
         if (products.isEmpty()) {
@@ -38,20 +42,13 @@ public class Transaction {
         } else {
             this.products = products;
         }
+
         this.totalPrice = totalPrice;
         this.promoCodeUsed = promoCodeUsed;
         this.pembeli = pembeli;
-        this.deliveryStatus = DeliveryStatus.MENUNGGU_VERIFIKASI.getValue();
         this.deliveryCode = "";
         this.setDeliveryMethod(deliveryMethod);
-    }
-
-    public void setDeliveryStatus(String status) {
-        if (DeliveryStatus.contains(status)) {
-            this.deliveryStatus = status;
-        } else {
-            throw new IllegalArgumentException();
-        }
+        this.transactionStatus = new TransactionMenungguVerifikasi();
     }
 
     public void setDeliveryMethod(String method) {
