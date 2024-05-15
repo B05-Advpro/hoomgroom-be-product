@@ -22,27 +22,25 @@ public class TransactionServiceImpl implements TransactionService {
         UUID pembeli = UUID.fromString(request.getUserId());
         String promoCodeUsed = request.getPromoCodeUsed();
         String deliverMethod = request.getDeliveryMethod();
-        Map<String, TransactionItemRequestDto> requestProducts = request.getProducts();
-        Map<UUID, TransactionItem> products = new HashMap<>();
+        List<TransactionItemRequestDto> requestProducts = request.getItems();
+        List<TransactionItem> items = new ArrayList<>();
 
-        for (Map.Entry<String, TransactionItemRequestDto> entry : requestProducts.entrySet()) {
-            TransactionItemRequestDto product = entry.getValue();
-            TransactionItem transactionItem = new TransactionItem(UUID.fromString(product.getProductId()),
-                    product.getName(),
-                    product.getPrice(),
-                    product.getQuantity());
-            products.put(UUID.fromString(product.getProductId()) ,transactionItem);
+        for (TransactionItemRequestDto item : requestProducts) {
+            TransactionItem transactionItem = new TransactionItem(UUID.fromString(item.getProductId()),
+                    item.getName(),
+                    item.getPrice(),
+                    item.getQuantity());
+            items.add(transactionItem);
         }
 
         double totalPrice = 0;
-        for (Map.Entry<UUID, TransactionItem> entry : products.entrySet()) {
-            TransactionItem product = entry.getValue();
-            totalPrice += product.getPrice() * product.getQuantity();
+        for (TransactionItem item : items) {
+            totalPrice += item.getPrice() * item.getQuantity();
         }
 
         Transaction transaction = new TransactionBuilder()
                 .setUserId(pembeli)
-                .setItems(products)
+                .setItems(items)
                 .setTotalPrice(totalPrice)
                 .setDeliveryMethod(deliverMethod)
                 .setPromoCodeUsed(promoCodeUsed)

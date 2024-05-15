@@ -3,10 +3,7 @@ package id.ac.ui.cs.advprog.hoomgroomproduct.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Getter
 @Entity
@@ -15,7 +12,7 @@ public class Cart {
     private UUID userId;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    private Map<UUID, CartItem> items;
+    private List<CartItem> items;
 
     public Cart() {
 
@@ -23,6 +20,6 @@ public class Cart {
 
     public Cart(UUID userId) {
         this.userId = userId;
-        this.items = new HashMap<>();
+        this.items = new ArrayList<>();
     }
 }

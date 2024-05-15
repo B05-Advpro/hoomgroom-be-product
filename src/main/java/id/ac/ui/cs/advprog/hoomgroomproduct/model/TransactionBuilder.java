@@ -1,5 +1,6 @@
 package id.ac.ui.cs.advprog.hoomgroomproduct.model;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 

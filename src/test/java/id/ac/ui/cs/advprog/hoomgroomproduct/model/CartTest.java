@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class CartTest {
     Cart cart;
-    Map<UUID, CartItem> cartItems;
+    List<CartItem> cartItems;
 
     @BeforeEach
     void setUp() {
@@ -18,9 +18,9 @@ class CartTest {
                 "Meja", 25000, 1);
 
         this.cart = new Cart(UUID.fromString("4e900a31-6af6-472d-aa44-15e145ed6b8d"));
-        this.cart.getItems().put(UUID.fromString("4e900a31-6af6-472d-aa44-15e145ed6b8d"), cartItem);
-        this.cartItems = new HashMap<>();
-        this.cartItems.put(UUID.fromString("4e900a31-6af6-472d-aa44-15e145ed6b8d"), cartItem);
+        this.cart.getItems().add(cartItem);
+        this.cartItems = new ArrayList<>();
+        this.cartItems.add(cartItem);
     }
 
     @Test
@@ -30,11 +30,11 @@ class CartTest {
 
     @Test
     void getItems() {
-        Map<UUID, CartItem> savedItems = cart.getItems();
+        List<CartItem> savedItems = cart.getItems();
         assertEquals(cartItems, savedItems);
         assertEquals(cartItems.size(), savedItems.size());
-        for (Map.Entry<UUID, CartItem> entry : cartItems.entrySet()) {
-            assertEquals(cartItems.get(entry.getKey()), savedItems.get(entry.getKey()));
+        for (int i = 0; i < cartItems.size(); i++) {
+            assertEquals(cartItems.get(i), savedItems.get(i));
         }
     }
 }
