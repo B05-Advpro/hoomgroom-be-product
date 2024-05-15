@@ -17,7 +17,7 @@ public class TransactionItem {
     private int quantity;
 
     @ManyToOne
-    @JoinColumn(name = "cart_id")
+    @JoinColumn(name = "transaction_id")
     private Transaction transaction;
 
     public TransactionItem() {
