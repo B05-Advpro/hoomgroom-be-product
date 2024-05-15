@@ -24,17 +24,17 @@ class TransactionTest {
         this.products.add(product2);
 
         this.transaction = new TransactionBuilder()
-                .setProducts(this.products)
+                .setItems(this.products)
                 .setTotalPrice(130000)
                 .setPromoCodeUsed("BELANJAHEMAT20")
-                .setPembeli(UUID.fromString("4f59c670-f83f-4d41-981f-37ee660a6e4c"))
+                .setUserId(UUID.fromString("4f59c670-f83f-4d41-981f-37ee660a6e4c"))
                 .setDeliveryMethod("MOTOR")
                 .build();
     }
 
     @Test
     void testGetProducts() {
-        List<TransactionItem> savedProducts = this.transaction.getProducts();
+        List<TransactionItem> savedProducts = this.transaction.getItems();
         assertSame(this.products, savedProducts);
         assertEquals(this.products.size(), savedProducts.size());
         for (int i = 0; i < this.products.size(); i++) {
@@ -48,10 +48,10 @@ class TransactionTest {
 
         assertThrows(IllegalArgumentException.class, () -> {
             this.transaction = new TransactionBuilder()
-                    .setProducts(this.products)
+                    .setItems(this.products)
                     .setTotalPrice(130000)
                     .setPromoCodeUsed("BELANJAHEMAT20")
-                    .setPembeli(UUID.fromString("4f59c670-f83f-4d41-981f-37ee660a6e4c"))
+                    .setUserId(UUID.fromString("4f59c670-f83f-4d41-981f-37ee660a6e4c"))
                     .setDeliveryMethod("MOTOR")
                     .build();
         });
@@ -68,7 +68,7 @@ class TransactionTest {
 
     @Test
     void testGetPembeli() {
-        assertEquals(UUID.fromString("4f59c670-f83f-4d41-981f-37ee660a6e4c"), this.transaction.getPembeli());
+        assertEquals(UUID.fromString("4f59c670-f83f-4d41-981f-37ee660a6e4c"), this.transaction.getUserId());
     }
 
     @Test
@@ -95,10 +95,10 @@ class TransactionTest {
     void testInvalidDeliveryMethod() {
         assertThrows(IllegalArgumentException.class, () -> {
             this.transaction = new TransactionBuilder()
-                    .setProducts(this.products)
+                    .setItems(this.products)
                     .setTotalPrice(130000)
                     .setPromoCodeUsed("BELANJAHEMAT20")
-                    .setPembeli(UUID.fromString("4f59c670-f83f-4d41-981f-37ee660a6e4c"))
+                    .setUserId(UUID.fromString("4f59c670-f83f-4d41-981f-37ee660a6e4c"))
                     .setDeliveryMethod("BECAK")
                     .build();
         });

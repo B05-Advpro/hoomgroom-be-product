@@ -41,8 +41,8 @@ public class TransactionServiceImpl implements TransactionService {
         }
 
         Transaction transaction = new TransactionBuilder()
-                .setPembeli(pembeli)
-                .setProducts(products)
+                .setUserId(pembeli)
+                .setItems(products)
                 .setTotalPrice(totalPrice)
                 .setDeliveryMethod(deliverMethod)
                 .setPromoCodeUsed(promoCodeUsed)

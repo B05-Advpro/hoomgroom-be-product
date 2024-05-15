@@ -10,7 +10,7 @@ import java.util.UUID;
 public class TransactionItem {
     @Id
     @GeneratedValue
-    private UUID id;
+    private UUID productId;
 
     private String name;
     private double price;
@@ -24,8 +24,8 @@ public class TransactionItem {
 
     }
 
-    public TransactionItem(UUID id, String name, double price, int quantity) {
-        this.id = id;
+    public TransactionItem(UUID productId, String name, double price, int quantity) {
+        this.productId = productId;
         this.name = name;
         this.price = price;
         this.quantity = quantity;

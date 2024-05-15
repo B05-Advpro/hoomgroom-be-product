@@ -18,7 +18,7 @@ class TransactionItemTest {
 
     @Test
     void testGetId() {
-        assertEquals(UUID.fromString("ca1c1b7d-f5aa-4573-aeff-d01665cc88c8"), transactionItem.getId());
+        assertEquals(UUID.fromString("ca1c1b7d-f5aa-4573-aeff-d01665cc88c8"), transactionItem.getProductId());
     }
 
     @Test

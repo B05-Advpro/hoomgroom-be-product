@@ -16,27 +16,27 @@ public class Transaction {
     private UUID id;
 
     @OneToMany(mappedBy = "transaction", cascade = CascadeType.ALL)
-    private List<TransactionItem> products;
+    private List<TransactionItem> items;
     private double totalPrice;
     private String promoCodeUsed;
-    private UUID pembeli;
+    private UUID userId;
     private String deliveryStatus;
     private String deliveryCode;
     private String deliveryMethod;
 
     public Transaction() {}
 
-    public Transaction(List<TransactionItem> products, double totalPrice, String promoCodeUsed, UUID pembeli, String deliveryMethod) {
+    public Transaction(List<TransactionItem> items, double totalPrice, String promoCodeUsed, UUID userId, String deliveryMethod) {
         this.id = UUID.randomUUID();
 
-        if (products.isEmpty()) {
+        if (items.isEmpty()) {
             throw new IllegalArgumentException();
         } else {
-            this.products = products;
+            this.items = items;
         }
         this.totalPrice = totalPrice;
         this.promoCodeUsed = promoCodeUsed;
-        this.pembeli = pembeli;
+        this.userId = userId;
         this.deliveryStatus = DeliveryStatus.MENUNGGU_VERIFIKASI.getValue();
         this.deliveryCode = "";
         this.setDeliveryMethod(deliveryMethod);

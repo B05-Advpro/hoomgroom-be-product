@@ -43,9 +43,9 @@ class TransactionControllerTest {
         products.add(product);
 
         this.transaction = new TransactionBuilder()
-                .setProducts(products)
+                .setItems(products)
                 .setPromoCodeUsed("BELANJAHEMAT20")
-                .setPembeli(UUID.fromString("4f59c670-f83f-4d41-981f-37ee660a6e4c"))
+                .setUserId(UUID.fromString("4f59c670-f83f-4d41-981f-37ee660a6e4c"))
                 .setDeliveryMethod("MOTOR")
                 .build();
     }

@@ -4,14 +4,14 @@ import java.util.List;
 import java.util.UUID;
 
 public class TransactionBuilder {
-    private List<TransactionItem> products;
+    private List<TransactionItem> items;
     private double totalPrice;
     private String promoCodeUsed;
-    private UUID pembeli;
+    private UUID userId;
     private String deliveryMethod;
 
-    public TransactionBuilder setProducts(List<TransactionItem> products) {
-        this.products = products;
+    public TransactionBuilder setItems(List<TransactionItem> items) {
+        this.items = items;
         return this;
     }
 
@@ -25,8 +25,8 @@ public class TransactionBuilder {
         return this;
     }
 
-    public TransactionBuilder setPembeli(UUID pembeli) {
-        this.pembeli = pembeli;
+    public TransactionBuilder setUserId(UUID userId) {
+        this.userId = userId;
         return this;
     }
 
@@ -36,6 +36,6 @@ public class TransactionBuilder {
     }
 
     public Transaction build() {
-        return new Transaction(products, totalPrice, promoCodeUsed, pembeli, deliveryMethod);
+        return new Transaction(items, totalPrice, promoCodeUsed, userId, deliveryMethod);
     }
 }
