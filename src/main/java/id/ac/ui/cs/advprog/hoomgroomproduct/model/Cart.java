@@ -4,7 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @Getter
@@ -14,7 +15,7 @@ public class Cart {
     private UUID userId;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CartItem> items;
+    private Map<UUID, CartItem> items;
 
     public Cart() {
 
@@ -22,6 +23,6 @@ public class Cart {
 
     public Cart(UUID userId) {
         this.userId = userId;
-        this.items = new ArrayList<>();
+        this.items = new HashMap<>();
     }
 }
