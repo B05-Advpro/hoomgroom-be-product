@@ -3,10 +3,7 @@ package id.ac.ui.cs.advprog.hoomgroomproduct.model;
 import id.ac.ui.cs.advprog.hoomgroomproduct.enums.DeliveryMethod;
 import id.ac.ui.cs.advprog.hoomgroomproduct.model.states.TransactionMenungguVerifikasi;
 import id.ac.ui.cs.advprog.hoomgroomproduct.model.states.TransactionStatus;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Transient;
+import jakarta.persistence.*;
 import lombok.Getter;
 
 import java.util.List;
@@ -27,6 +24,8 @@ public class Transaction {
     private UUID pembeli;
     private String deliveryCode;
     private String deliveryMethod;
+
+    @Embedded
     private TransactionStatus transactionStatus;
 
     public Transaction() {
