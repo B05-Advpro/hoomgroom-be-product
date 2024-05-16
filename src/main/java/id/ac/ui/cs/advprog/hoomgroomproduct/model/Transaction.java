@@ -6,30 +6,26 @@ import jakarta.persistence.*;
 import lombok.Getter;
 
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 @Getter
 @Entity
 public class Transaction {
     @Id
-    @GeneratedValue
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
 
     @OneToMany(mappedBy = "transaction", cascade = CascadeType.ALL)
     private List<TransactionItem> items;
     private double totalPrice;
     private String promoCodeUsed;
-    private UUID userId;
+    private Long userId;
     private String deliveryStatus;
     private String deliveryCode;
     private String deliveryMethod;
 
     public Transaction() {}
 
-    public Transaction(List<TransactionItem> items, double totalPrice, String promoCodeUsed, UUID userId, String deliveryMethod) {
-        this.id = UUID.randomUUID();
-
+    public Transaction(List<TransactionItem> items, double totalPrice, String promoCodeUsed, Long userId, String deliveryMethod) {
         if (items.isEmpty()) {
             throw new IllegalArgumentException();
         } else {

@@ -4,14 +4,14 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.UUID;
-
 @Getter
 @Setter
 @Entity
 public class CartItem {
     @Id
-    private UUID productId;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
+    private String productId;
     private String name;
     private double price;
     private int quantity;
@@ -24,7 +24,7 @@ public class CartItem {
 
     }
 
-    public CartItem(UUID productId, String name, double price, int quantity) {
+    public CartItem(String productId, String name, double price, int quantity) {
         this.productId = productId;
         this.name = name;
         this.price = price;
