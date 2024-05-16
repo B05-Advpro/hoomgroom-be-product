@@ -16,9 +16,9 @@ class TransactionTest {
     @BeforeEach
     void setUp() {
         this.items = new ArrayList<>();
-        TransactionItem product1 = new TransactionItem(UUID.fromString("ca1c1b7d-f5aa-4573-aeff-d01665cc88c8"),
+        TransactionItem product1 = new TransactionItem("ca1c1b7d-f5aa-4573-aeff-d01665cc88c8",
                 "Product 1", 15000, 2);
-        TransactionItem product2 = new TransactionItem(UUID.fromString("df6c1b7d-f5aa-4573-aeff-d01665cc88c8"),
+        TransactionItem product2 = new TransactionItem("df6c1b7d-f5aa-4573-aeff-d01665cc88c8",
                 "Product 2", 25000, 4);
         this.items.add(product1);
         this.items.add(product2);
@@ -27,7 +27,7 @@ class TransactionTest {
                 .setItems(this.items)
                 .setTotalPrice(130000)
                 .setPromoCodeUsed("BELANJAHEMAT20")
-                .setUserId(UUID.fromString("4f59c670-f83f-4d41-981f-37ee660a6e4c"))
+                .setUserId(1L)
                 .setDeliveryMethod("MOTOR")
                 .build();
     }
@@ -51,7 +51,7 @@ class TransactionTest {
                     .setItems(this.items)
                     .setTotalPrice(130000)
                     .setPromoCodeUsed("BELANJAHEMAT20")
-                    .setUserId(UUID.fromString("4f59c670-f83f-4d41-981f-37ee660a6e4c"))
+                    .setUserId(1L)
                     .setDeliveryMethod("MOTOR")
                     .build();
         });
@@ -67,8 +67,8 @@ class TransactionTest {
     }
 
     @Test
-    void testGetPembeli() {
-        assertEquals(UUID.fromString("4f59c670-f83f-4d41-981f-37ee660a6e4c"), this.transaction.getUserId());
+    void testGetUserId() {
+        assertEquals(1L, this.transaction.getUserId());
     }
 
     @Test
@@ -98,7 +98,7 @@ class TransactionTest {
                     .setItems(this.items)
                     .setTotalPrice(130000)
                     .setPromoCodeUsed("BELANJAHEMAT20")
-                    .setUserId(UUID.fromString("4f59c670-f83f-4d41-981f-37ee660a6e4c"))
+                    .setUserId(1L)
                     .setDeliveryMethod("BECAK")
                     .build();
         });

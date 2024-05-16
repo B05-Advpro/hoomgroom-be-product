@@ -12,13 +12,13 @@ class CartItemTest {
 
     @BeforeEach
     void setUp() {
-        cartItem = new CartItem(UUID.fromString("ca1c1b7d-f5aa-4573-aeff-d01665cc88c8"), "Meja",
+        cartItem = new CartItem("ca1c1b7d-f5aa-4573-aeff-d01665cc88c8", "Meja",
                 25000, 1);
     }
 
     @Test
     void getProductId() {
-        assertEquals(UUID.fromString("ca1c1b7d-f5aa-4573-aeff-d01665cc88c8"), cartItem.getProductId());
+        assertEquals("ca1c1b7d-f5aa-4573-aeff-d01665cc88c8", cartItem.getProductId());
     }
 
     @Test
