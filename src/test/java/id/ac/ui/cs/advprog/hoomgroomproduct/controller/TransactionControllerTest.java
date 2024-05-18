@@ -1,7 +1,6 @@
 package id.ac.ui.cs.advprog.hoomgroomproduct.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import id.ac.ui.cs.advprog.hoomgroomproduct.dto.TransactionItemRequestDto;
 import id.ac.ui.cs.advprog.hoomgroomproduct.dto.TransactionRequestDto;
 import id.ac.ui.cs.advprog.hoomgroomproduct.model.Transaction;
 import id.ac.ui.cs.advprog.hoomgroomproduct.model.TransactionBuilder;
@@ -14,7 +13,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-
 
 import java.util.*;
 
@@ -36,41 +34,49 @@ class TransactionControllerTest {
     @BeforeEach
     void setUp() {
         List<TransactionItem> items = new ArrayList<>();
-        TransactionItem product = new TransactionItem(UUID.fromString("ca1c1b7d-f5aa-4573-aeff-d01665cc88c8"),
-                "Product 1", 15000, 2);
+        TransactionItem product = new TransactionItem("ca1c1b7d-f5aa-4573-aeff-d01665cc88c8",
+                "Meja", 25000, 2);
         items.add(product);
 
         this.transaction = new TransactionBuilder()
                 .setItems(items)
                 .setPromoCodeUsed("BELANJAHEMAT20")
-                .setUserId(UUID.fromString("4f59c670-f83f-4d41-981f-37ee660a6e4c"))
+                .setTotalPrice(40000)
+                .setUserId(1L)
                 .setDeliveryMethod("MOTOR")
                 .build();
     }
 
     @Test
     void testCreateTransaction() throws Exception {
-        TransactionItemRequestDto requestProduct = new TransactionItemRequestDto();
-        requestProduct.setProductId("ca1c1b7d-f5aa-4573-aeff-d01665cc88c8");
-        requestProduct.setName("Product 1");
-        requestProduct.setPrice(15000);
-        requestProduct.setQuantity(2);
-
-        List<TransactionItemRequestDto> requestProducts = new ArrayList<>();
-        requestProducts.add(requestProduct);
-
         TransactionRequestDto request = new TransactionRequestDto();
-        request.setItems(requestProducts);
-        request.setUserId("4f59c670-f83f-4d41-981f-37ee660a6e4c");
+        request.setUserId(1L);
         request.setPromoCodeUsed("BELANJAHEMAT20");
         request.setDeliveryMethod("MOTOR");
 
-        doReturn(this.transaction).when(transactionService).create(request);
+        when(transactionService.create(any(TransactionRequestDto.class))).thenReturn(this.transaction);
 
         mockMvc.perform(post("/transaction/create")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(request)))
                 .andExpect(status().isOk());
+
+        verify(transactionService, times(1)).create(any(TransactionRequestDto.class));
+    }
+
+    @Test
+    void testCreateTransactionEmptyCart() throws Exception {
+        TransactionRequestDto request = new TransactionRequestDto();
+        request.setUserId(1L);
+        request.setPromoCodeUsed("BELANJAHEMAT20");
+        request.setDeliveryMethod("MOTOR");
+
+        when(transactionService.create(any(TransactionRequestDto.class))).thenThrow(new IllegalStateException());
+
+        mockMvc.perform(post("/transaction/create")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(request)))
+                        .andExpect(status().isBadRequest());
     }
 
     private static String asJsonString(final Object obj) {
