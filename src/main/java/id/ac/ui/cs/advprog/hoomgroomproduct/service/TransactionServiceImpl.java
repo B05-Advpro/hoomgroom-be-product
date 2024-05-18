@@ -1,10 +1,7 @@
 package id.ac.ui.cs.advprog.hoomgroomproduct.service;
 
-import id.ac.ui.cs.advprog.hoomgroomproduct.dto.TransactionItemRequestDto;
 import id.ac.ui.cs.advprog.hoomgroomproduct.dto.TransactionRequestDto;
-import id.ac.ui.cs.advprog.hoomgroomproduct.model.Transaction;
-import id.ac.ui.cs.advprog.hoomgroomproduct.model.TransactionBuilder;
-import id.ac.ui.cs.advprog.hoomgroomproduct.model.TransactionItem;
+import id.ac.ui.cs.advprog.hoomgroomproduct.model.*;
 import id.ac.ui.cs.advprog.hoomgroomproduct.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,31 +14,38 @@ public class TransactionServiceImpl implements TransactionService {
     @Autowired
     private TransactionRepository transactionRepository;
 
+    @Autowired
+    private CartService cartService;
+
     @Override
     public Transaction create(TransactionRequestDto request) {
-        UUID pembeli = UUID.fromString(request.getUserId());
+        Long userId = request.getUserId();
         String promoCodeUsed = request.getPromoCodeUsed();
         String deliverMethod = request.getDeliveryMethod();
-        List<TransactionItemRequestDto> requestProducts = request.getItems();
-        List<TransactionItem> items = new ArrayList<>();
+        Cart cart = cartService.getCart(userId);
 
-        for (TransactionItemRequestDto item : requestProducts) {
-            TransactionItem transactionItem = new TransactionItem(UUID.fromString(item.getProductId()),
-                    item.getName(),
-                    item.getPrice(),
-                    item.getQuantity());
-            items.add(transactionItem);
+        if (cart.getItems().isEmpty()) {
+            throw new IllegalStateException("Cart is empty");
         }
+
+        List<CartItem> items = cart.getItems();
+        List<TransactionItem> transactionItems = new ArrayList<>();
 
         double totalPrice = 0;
-        for (TransactionItem item : items) {
+        for (CartItem item : items) {
+            TransactionItem transactionItem = new TransactionItem(item.getProductId(), item.getName(),
+                    item.getPrice(), item.getQuantity());
             totalPrice += item.getPrice() * item.getQuantity();
+            transactionItems.add(transactionItem);
         }
 
+        double promoValue = Double.parseDouble(promoCodeUsed.substring(promoCodeUsed.length() - 2));
+        double newPrice = totalPrice - (totalPrice * (promoValue/100));
+
         Transaction transaction = new TransactionBuilder()
-                .setUserId(pembeli)
-                .setItems(items)
-                .setTotalPrice(totalPrice)
+                .setUserId(userId)
+                .setItems(transactionItems)
+                .setTotalPrice(newPrice)
                 .setDeliveryMethod(deliverMethod)
                 .setPromoCodeUsed(promoCodeUsed)
                 .build();
