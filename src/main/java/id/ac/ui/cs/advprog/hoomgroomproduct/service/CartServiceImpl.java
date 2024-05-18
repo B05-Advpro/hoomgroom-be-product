@@ -1,5 +1,6 @@
 package id.ac.ui.cs.advprog.hoomgroomproduct.service;
 
+import id.ac.ui.cs.advprog.hoomgroomproduct.dto.CartDto;
 import id.ac.ui.cs.advprog.hoomgroomproduct.model.Cart;
 import id.ac.ui.cs.advprog.hoomgroomproduct.model.CartItem;
 import id.ac.ui.cs.advprog.hoomgroomproduct.repository.CartRepository;
@@ -21,7 +22,13 @@ public class CartServiceImpl implements CartService {
                 });
     }
 
-    public void addItemToCart(Long userId, String productId, String name, double price, int quantity) {
+    public void addItemToCart(CartDto request) {
+        Long userId = request.getUserId();
+        String productId = request.getProductId();
+        String name = request.getName();
+        double price = request.getPrice();
+        int quantity = request.getQuantity();
+
         Cart cart = getCart(userId);
         List<CartItem> cartItems = cart.getItems();
         CartItem savedItem = null;
@@ -42,13 +49,17 @@ public class CartServiceImpl implements CartService {
         cartRepository.save(cart);
     }
 
-    public void deleteItemFromCart(Long userId, String productId) {
+    public void deleteItemFromCart(CartDto request) {
+        Long userId = request.getUserId();
+        String productId = request.getProductId();
+
         Cart cart = getCart(userId);
         cart.getItems().removeIf(item -> item.getProductId().equals(productId));
         cartRepository.save(cart);
     }
 
-    public void clearCart(Long userId) {
+    public void clearCart(CartDto request) {
+        Long userId = request.getUserId();
         Cart cart = getCart(userId);
         cart.getItems().clear();
         cartRepository.save(cart);

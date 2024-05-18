@@ -1,5 +1,6 @@
 package id.ac.ui.cs.advprog.hoomgroomproduct.service;
 
+import id.ac.ui.cs.advprog.hoomgroomproduct.dto.CartDto;
 import id.ac.ui.cs.advprog.hoomgroomproduct.model.Cart;
 import id.ac.ui.cs.advprog.hoomgroomproduct.model.CartItem;
 import id.ac.ui.cs.advprog.hoomgroomproduct.repository.CartRepository;
@@ -65,7 +66,14 @@ class CartServiceImplTest {
         when(cartRepository.findByUserId(userId)).thenReturn((Optional.of(cart)));
         when(cartRepository.save(any(Cart.class))).thenAnswer(i -> i.getArguments()[0]);
 
-        cartService.addItemToCart(userId, productId, name, price, quantity);
+        CartDto request = new CartDto();
+        request.setUserId(userId);
+        request.setProductId(productId);
+        request.setName(name);
+        request.setPrice(price);
+        request.setQuantity(quantity);
+
+        cartService.addItemToCart(request);
 
         List<CartItem> items = cart.getItems();
         assertEquals(1, items.size());
@@ -90,7 +98,14 @@ class CartServiceImplTest {
         when(cartRepository.findByUserId(userId)).thenReturn((Optional.of(cart)));
         when(cartRepository.save(any(Cart.class))).thenAnswer(i -> i.getArguments()[0]);
 
-        cartService.addItemToCart(userId, productId, name, price, newQuantity);
+        CartDto request = new CartDto();
+        request.setUserId(userId);
+        request.setProductId(productId);
+        request.setName(name);
+        request.setPrice(price);
+        request.setQuantity(newQuantity);
+
+        cartService.addItemToCart(request);
 
         List<CartItem> items = cart.getItems();
         assertEquals(1, items.size());
@@ -122,7 +137,11 @@ class CartServiceImplTest {
         when(cartRepository.findByUserId(userId)).thenReturn(Optional.of(cart));
         when(cartRepository.save(any(Cart.class))).thenAnswer(i -> i.getArguments()[0]);
 
-        cartService.deleteItemFromCart(userId, productId1);
+        CartDto request = new CartDto();
+        request.setUserId(userId);
+        request.setProductId(productId1);
+
+        cartService.deleteItemFromCart(request);
 
         assertEquals(1, cart.getItems().size());
         verify(cartRepository, times(1)).findByUserId(userId);
@@ -143,7 +162,10 @@ class CartServiceImplTest {
         when(cartRepository.findByUserId(userId)).thenReturn(Optional.of(cart));
         when(cartRepository.save(any(Cart.class))).thenAnswer(i -> i.getArguments()[0]);
 
-        cartService.clearCart(userId);
+        CartDto request = new CartDto();
+        request.setUserId(userId);
+
+        cartService.clearCart(request);
 
         assertTrue(cart.getItems().isEmpty());
         verify(cartRepository, times(1)).findByUserId(userId);

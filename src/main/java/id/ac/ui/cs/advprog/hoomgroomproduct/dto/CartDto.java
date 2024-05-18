@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class CardDto {
+public class CartDto {
     private Long userId;
     private String productId;
     private String name;
