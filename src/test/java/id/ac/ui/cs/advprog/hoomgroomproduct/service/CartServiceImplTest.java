@@ -141,9 +141,9 @@ class CartServiceImplTest {
         request.setUserId(userId);
         request.setProductId(productId1);
 
-        cartService.deleteItemFromCart(request);
+        Cart savedCart = cartService.deleteItemFromCart(request);
 
-        assertEquals(1, cart.getItems().size());
+        assertEquals(1, savedCart.getItems().size());
         verify(cartRepository, times(1)).findByUserId(userId);
         verify(cartRepository, times(1)).save(cart);
     }
@@ -162,9 +162,25 @@ class CartServiceImplTest {
         when(cartRepository.findByUserId(userId)).thenReturn(Optional.of(cart));
         when(cartRepository.save(any(Cart.class))).thenAnswer(i -> i.getArguments()[0]);
 
-        cartService.clearCart(userId);
+        Cart savedCart = cartService.clearCart(userId);
 
-        assertTrue(cart.getItems().isEmpty());
+        assertTrue(savedCart.getItems().isEmpty());
+        verify(cartRepository, times(1)).findByUserId(userId);
+        verify(cartRepository, times(1)).save(cart);
+    }
+
+    @Test
+    void testTopUpWallet() {
+        Long userId = 1L;
+        double amount = 10000;
+        Cart cart = new Cart(userId);
+
+        when(cartRepository.findByUserId(userId)).thenReturn(Optional.of(cart));
+        when(cartRepository.save(any(Cart.class))).thenAnswer(i -> i.getArguments()[0]);
+
+        Cart savedCart = cartService.topUpWallet(userId, amount);
+
+        assertEquals(10000, savedCart.getWallet());
         verify(cartRepository, times(1)).findByUserId(userId);
         verify(cartRepository, times(1)).save(cart);
     }
