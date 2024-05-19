@@ -1,15 +1,17 @@
 package id.ac.ui.cs.advprog.hoomgroomproduct.service;
 
 import id.ac.ui.cs.advprog.hoomgroomproduct.dto.TransactionRequestDto;
-import id.ac.ui.cs.advprog.hoomgroomproduct.model.Cart;
-import id.ac.ui.cs.advprog.hoomgroomproduct.model.CartItem;
-import id.ac.ui.cs.advprog.hoomgroomproduct.model.Transaction;
+import id.ac.ui.cs.advprog.hoomgroomproduct.model.*;
 import id.ac.ui.cs.advprog.hoomgroomproduct.repository.TransactionRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -66,5 +68,39 @@ class TransactionServiceImplTest {
         assertEquals(userId, transaction.getUserId());
         assertEquals(40000, transaction.getTotalPrice());
         verify(transactionRepository, times(1)).save(any(Transaction.class));
+    }
+
+    @Test
+    void testGetAll() {
+        Transaction transaction1 = new TransactionBuilder().setUserId(1L).setDeliveryMethod("MOTOR").build();
+        Transaction transaction2 = new TransactionBuilder().setUserId(2L).setDeliveryMethod("MOTOR").build();
+        List<Transaction> transactions = new ArrayList<>();
+        transactions.add(transaction1);
+        transactions.add(transaction2);
+
+        when(transactionRepository.findAll()).thenReturn(transactions);
+
+        List<Transaction> savedTransactions = transactionService.getAll();
+        assertEquals(transactions, savedTransactions);
+        for (int i = 0; i < transactions.size(); i++) {
+            assertEquals(transactions.get(i).getUserId(), savedTransactions.get(i).getUserId());
+        }
+    }
+
+    @Test
+    void testGetTransactionByUserId() {
+        Transaction transaction1 = new TransactionBuilder().setUserId(1L).setDeliveryMethod("MOTOR").build();
+        Transaction transaction2 = new TransactionBuilder().setUserId(1L).setDeliveryMethod("MOTOR").build();
+        List<Transaction> transactions = new ArrayList<>();
+        transactions.add(transaction1);
+        transactions.add(transaction2);
+
+        when(transactionRepository.findByUserId(1L)).thenReturn(transactions);
+
+        List<Transaction> savedTransactions = transactionService.getTransactionByUserId(1L);
+        assertEquals(transactions, savedTransactions);
+        for (int i = 0; i < transactions.size(); i++) {
+            assertEquals(transactions.get(i).getUserId(), savedTransactions.get(i).getUserId());
+        }
     }
 }
