@@ -37,4 +37,15 @@ class CartTest {
             assertEquals(cartItems.get(i), savedItems.get(i));
         }
     }
+
+    @Test
+    void getWallet() {
+        assertEquals(0, this.cart.getWallet());
+    }
+
+    @Test
+    void setWallet() {
+        this.cart.setWallet(50000);
+        assertEquals(50000, this.cart.getWallet());
+    }
 }
