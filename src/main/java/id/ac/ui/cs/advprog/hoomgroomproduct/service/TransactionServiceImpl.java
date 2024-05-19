@@ -22,8 +22,8 @@ public class TransactionServiceImpl implements TransactionService {
         Long userId = request.getUserId();
         String promoCodeUsed = request.getPromoCodeUsed();
         String deliverMethod = request.getDeliveryMethod();
-        Cart cart = cartService.getCart(userId);
 
+        Cart cart = cartService.getCart(userId);
         if (cart.getItems().isEmpty()) {
             throw new IllegalStateException("Cart is empty");
         }
@@ -50,7 +50,19 @@ public class TransactionServiceImpl implements TransactionService {
                 .setPromoCodeUsed(promoCodeUsed)
                 .build();
 
+        transactionItems.forEach(item -> item.setTransaction(transaction));
         transactionRepository.save(transaction);
+        cartService.clearCart(userId);
         return transaction;
+    }
+
+    @Override
+    public List<Transaction> getAll() {
+        return transactionRepository.findAll();
+    }
+
+    @Override
+    public List<Transaction> getTransactionByUserId(Long userId) {
+        return transactionRepository.findByUserId(userId);
     }
 }
