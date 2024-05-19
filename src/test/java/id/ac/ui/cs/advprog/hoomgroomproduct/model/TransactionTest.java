@@ -58,6 +58,11 @@ class TransactionTest {
     }
 
     @Test
+    void testCreatedAt() {
+        assertNotNull(this.transaction.getCreatedAt());
+    }
+
+    @Test
     void testGetTotalPrice() {
         assertEquals(130000, this.transaction.getTotalPrice());
     }
