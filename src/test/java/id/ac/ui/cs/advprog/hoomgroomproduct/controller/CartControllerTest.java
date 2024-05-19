@@ -66,12 +66,11 @@ class CartControllerTest {
 
     @Test
     void testClearCart() throws Exception {
-        mockMvc.perform(post("/cart/clear-cart")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(asJsonString(this.request)))
+        Long userId = request.getUserId();
+        mockMvc.perform(post("/cart/clear-cart/{userId}", userId))
                 .andExpect(status().isOk());
 
-        verify(cartService, times(1)).clearCart(any(CartDto.class));
+        verify(cartService, times(1)).clearCart(userId);
     }
 
     private static String asJsonString(final Object obj) {

@@ -162,10 +162,7 @@ class CartServiceImplTest {
         when(cartRepository.findByUserId(userId)).thenReturn(Optional.of(cart));
         when(cartRepository.save(any(Cart.class))).thenAnswer(i -> i.getArguments()[0]);
 
-        CartDto request = new CartDto();
-        request.setUserId(userId);
-
-        cartService.clearCart(request);
+        cartService.clearCart(userId);
 
         assertTrue(cart.getItems().isEmpty());
         verify(cartRepository, times(1)).findByUserId(userId);

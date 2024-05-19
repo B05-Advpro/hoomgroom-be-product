@@ -9,5 +9,5 @@ public interface CartService {
     public Cart getCart(Long userId);
     public void addItemToCart(CartDto request);
     public void deleteItemFromCart(CartDto request);
-    public void clearCart(CartDto request);
+    public void clearCart(Long userId);
 }

@@ -35,10 +35,10 @@ public class CartController {
         }
     }
 
-    @PostMapping("/clear-cart")
-    public ResponseEntity<String> clearCart(@RequestBody CartDto request) {
+    @PostMapping("/clear-cart/{userId}")
+    public ResponseEntity<String> clearCart(@PathVariable Long userId) {
         try {
-            cartService.clearCart(request);
+            cartService.clearCart(userId);
             return ResponseEntity.ok("Cart cleared successfully");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
