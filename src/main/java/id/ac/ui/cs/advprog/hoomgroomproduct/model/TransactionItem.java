@@ -2,9 +2,12 @@ package id.ac.ui.cs.advprog.hoomgroomproduct.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Entity
+@NoArgsConstructor
 public class TransactionItem {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -14,13 +17,10 @@ public class TransactionItem {
     private double price;
     private int quantity;
 
+    @Setter
     @ManyToOne
     @JoinColumn(name = "transaction_id")
     private Transaction transaction;
-
-    public TransactionItem() {
-
-    }
 
     public TransactionItem(String productId, String name, double price, int quantity) {
         this.productId = productId;
