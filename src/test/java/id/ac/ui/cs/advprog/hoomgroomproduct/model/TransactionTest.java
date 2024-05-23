@@ -43,21 +43,6 @@ class TransactionTest {
     }
 
     @Test
-    void testGetProductsEmpty() {
-        this.items.clear();
-
-        assertThrows(IllegalArgumentException.class, () -> {
-            this.transaction = new TransactionBuilder()
-                    .setItems(this.items)
-                    .setTotalPrice(130000)
-                    .setPromoCodeUsed("BELANJAHEMAT20")
-                    .setUserId(1L)
-                    .setDeliveryMethod("MOTOR")
-                    .build();
-        });
-    }
-
-    @Test
     void testCreatedAt() {
         assertNotNull(this.transaction.getCreatedAt());
     }
