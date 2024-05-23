@@ -2,6 +2,8 @@ package id.ac.ui.cs.advprog.hoomgroomproduct.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import id.ac.ui.cs.advprog.hoomgroomproduct.dto.CartDto;
+import id.ac.ui.cs.advprog.hoomgroomproduct.dto.TopUpDto;
+import id.ac.ui.cs.advprog.hoomgroomproduct.model.Cart;
 import id.ac.ui.cs.advprog.hoomgroomproduct.service.CartService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,8 +13,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import static org.mockito.Mockito.*;
@@ -45,6 +49,21 @@ class CartControllerTest {
     }
 
     @Test
+    void testGetCart() throws Exception {
+        Long userId = request.getUserId();
+        Cart cart = new Cart(userId);
+
+        when(cartService.getCart(userId)).thenReturn(cart);
+
+        mockMvc.perform(get("/cart/{userId}", userId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.userId").value(userId))
+                .andExpect(jsonPath("$.items").isEmpty());
+
+        verify(cartService, times(1)).getCart(userId);
+    }
+
+    @Test
     void testAddItemToCart() throws Exception {
         mockMvc.perform(post("/cart/add-items")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -71,6 +90,23 @@ class CartControllerTest {
                 .andExpect(status().isOk());
 
         verify(cartService, times(1)).clearCart(userId);
+    }
+
+    @Test
+    void testTopUp() throws Exception {
+        Long userId = request.getUserId();
+        double amount = 50000;
+
+        TopUpDto request = new TopUpDto();
+        request.setUserId(userId);
+        request.setAmount(amount);
+
+        mockMvc.perform(post("/cart/topup")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(request)))
+                .andExpect(status().isOk());
+
+        verify(cartService, times(1)).topUpWallet(any(TopUpDto.class));
     }
 
     private static String asJsonString(final Object obj) {
