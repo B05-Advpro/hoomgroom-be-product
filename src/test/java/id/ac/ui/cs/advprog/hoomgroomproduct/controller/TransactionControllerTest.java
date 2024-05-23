@@ -17,7 +17,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.*;
 
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(TransactionController.class)
@@ -77,6 +79,57 @@ class TransactionControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(request)))
                         .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testGetAll() throws Exception {
+        Long userId1 = 1L;
+        Long userId2 = 2L;
+        Transaction transaction1 = new TransactionBuilder().setUserId(userId1).setDeliveryMethod("MOTOR").build();
+        Transaction transaction2 = new TransactionBuilder().setUserId(userId2).setDeliveryMethod("PESAWAT").build();
+
+        when(transactionService.getAll()).thenReturn(Arrays.asList(transaction1, transaction2));
+
+        mockMvc.perform(get("/transaction/get-all"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].userId").value(userId1))
+                .andExpect(jsonPath("$[1].userId").value(userId2));
+    }
+
+    @Test
+    void testGetAllEmpty() throws Exception {
+        when(transactionService.getAll()).thenReturn(Collections.emptyList());
+
+        mockMvc.perform(get("/transaction/get-all"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$").isEmpty());
+    }
+
+    @Test
+    void testGetTransactionByUserId() throws Exception {
+        long userId = 1L;
+        Transaction transaction1 = new TransactionBuilder().setUserId(userId).setDeliveryMethod("MOTOR").build();
+        Transaction transaction2 = new TransactionBuilder().setUserId(userId).setDeliveryMethod("PESAWAT").build();
+
+        when(transactionService.getTransactionByUserId(userId)).thenReturn(Arrays.asList(transaction1, transaction2));
+
+        mockMvc.perform(get("/transaction/get/{userId}", userId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].userId").value(userId))
+                .andExpect(jsonPath("$[1].userId").value(userId));
+    }
+
+    @Test
+    void testGetTransactionByUserIdEmpty() throws Exception {
+        Long userId = 1L;
+
+        when(transactionService.getTransactionByUserId(userId)).thenReturn(Collections.emptyList());
+
+        mockMvc.perform(get("/transaction/get/{userId}", userId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$").isEmpty());
     }
 
     private static String asJsonString(final Object obj) {
