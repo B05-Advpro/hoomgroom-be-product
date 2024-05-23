@@ -65,7 +65,9 @@ public class CartServiceImpl implements CartService {
         return cartRepository.save(cart);
     }
 
-    public Cart topUpWallet(Long userId, double amount) {
+    public Cart topUpWallet(TopUpDto request) {
+        Long userId = request.getUserId();
+        double amount = request.getAmount();
         Cart cart = getCart(userId);
         cart.setWallet(cart.getWallet() + amount);
         return cartRepository.save(cart);

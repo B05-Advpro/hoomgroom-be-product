@@ -1,6 +1,7 @@
 package id.ac.ui.cs.advprog.hoomgroomproduct.service;
 
 import id.ac.ui.cs.advprog.hoomgroomproduct.dto.CartDto;
+import id.ac.ui.cs.advprog.hoomgroomproduct.dto.TopUpDto;
 import id.ac.ui.cs.advprog.hoomgroomproduct.model.Cart;
 import id.ac.ui.cs.advprog.hoomgroomproduct.model.CartItem;
 import id.ac.ui.cs.advprog.hoomgroomproduct.repository.CartRepository;
@@ -175,10 +176,14 @@ class CartServiceImplTest {
         double amount = 10000;
         Cart cart = new Cart(userId);
 
+        TopUpDto request = new TopUpDto();
+        request.setUserId(userId);
+        request.setAmount(amount);
+
         when(cartRepository.findByUserId(userId)).thenReturn(Optional.of(cart));
         when(cartRepository.save(any(Cart.class))).thenAnswer(i -> i.getArguments()[0]);
 
-        Cart savedCart = cartService.topUpWallet(userId, amount);
+        Cart savedCart = cartService.topUpWallet(request);
 
         assertEquals(10000, savedCart.getWallet());
         verify(cartRepository, times(1)).findByUserId(userId);

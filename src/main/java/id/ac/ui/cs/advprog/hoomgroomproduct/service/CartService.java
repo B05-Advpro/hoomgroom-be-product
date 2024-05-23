@@ -11,5 +11,5 @@ public interface CartService {
     public Cart addItemToCart(CartDto request);
     public Cart deleteItemFromCart(CartDto request);
     public Cart clearCart(Long userId);
-    public Cart topUpWallet(Long userId, double amount);
+    public Cart topUpWallet(TopUpDto request);
 }
