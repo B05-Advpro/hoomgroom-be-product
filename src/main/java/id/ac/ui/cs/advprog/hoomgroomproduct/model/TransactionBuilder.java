@@ -1,14 +1,12 @@
 package id.ac.ui.cs.advprog.hoomgroomproduct.model;
 
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 public class TransactionBuilder {
     private List<TransactionItem> items;
     private double totalPrice;
     private String promoCodeUsed;
-    private UUID userId;
+    private Long userId;
     private String deliveryMethod;
 
     public TransactionBuilder setItems(List<TransactionItem> items) {
@@ -26,7 +24,7 @@ public class TransactionBuilder {
         return this;
     }
 
-    public TransactionBuilder setUserId(UUID userId) {
+    public TransactionBuilder setUserId(Long userId) {
         this.userId = userId;
         return this;
     }

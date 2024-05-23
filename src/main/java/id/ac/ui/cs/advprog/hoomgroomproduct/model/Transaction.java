@@ -4,37 +4,32 @@ import id.ac.ui.cs.advprog.hoomgroomproduct.enums.DeliveryMethod;
 import id.ac.ui.cs.advprog.hoomgroomproduct.enums.DeliveryStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 @Getter
 @Entity
+@NoArgsConstructor
 public class Transaction {
     @Id
-    @GeneratedValue
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
 
     @OneToMany(mappedBy = "transaction", cascade = CascadeType.ALL)
     private List<TransactionItem> items;
+    private LocalDateTime createdAt;
     private double totalPrice;
     private String promoCodeUsed;
-    private UUID userId;
+    private Long userId;
     private String deliveryStatus;
     private String deliveryCode;
     private String deliveryMethod;
 
-    public Transaction() {}
-
-    public Transaction(List<TransactionItem> items, double totalPrice, String promoCodeUsed, UUID userId, String deliveryMethod) {
-        this.id = UUID.randomUUID();
-
-        if (items.isEmpty()) {
-            throw new IllegalArgumentException();
-        } else {
-            this.items = items;
-        }
+    public Transaction(List<TransactionItem> items, double totalPrice, String promoCodeUsed, Long userId, String deliveryMethod) {
+        this.items = items;
+        this.createdAt = LocalDateTime.now();
         this.totalPrice = totalPrice;
         this.promoCodeUsed = promoCodeUsed;
         this.userId = userId;

@@ -14,10 +14,10 @@ class CartTest {
 
     @BeforeEach
     void setUp() {
-        CartItem cartItem = new CartItem(UUID.fromString("ca1c1b7d-f5aa-4573-aeff-d01665cc88c8"),
+        CartItem cartItem = new CartItem("ca1c1b7d-f5aa-4573-aeff-d01665cc88c8",
                 "Meja", 25000, 1);
 
-        this.cart = new Cart(UUID.fromString("4e900a31-6af6-472d-aa44-15e145ed6b8d"));
+        this.cart = new Cart(1L);
         this.cart.getItems().add(cartItem);
         this.cartItems = new ArrayList<>();
         this.cartItems.add(cartItem);
@@ -25,7 +25,7 @@ class CartTest {
 
     @Test
     void getUserId() {
-        assertEquals(UUID.fromString("4e900a31-6af6-472d-aa44-15e145ed6b8d"), cart.getUserId());
+        assertEquals(1L, cart.getUserId());
     }
 
     @Test
@@ -36,5 +36,16 @@ class CartTest {
         for (int i = 0; i < cartItems.size(); i++) {
             assertEquals(cartItems.get(i), savedItems.get(i));
         }
+    }
+
+    @Test
+    void getWallet() {
+        assertEquals(0, this.cart.getWallet());
+    }
+
+    @Test
+    void setWallet() {
+        this.cart.setWallet(50000);
+        assertEquals(50000, this.cart.getWallet());
     }
 }

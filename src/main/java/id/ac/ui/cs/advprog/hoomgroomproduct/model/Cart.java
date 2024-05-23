@@ -2,24 +2,29 @@ package id.ac.ui.cs.advprog.hoomgroomproduct.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.*;
 
 @Getter
 @Entity
+@NoArgsConstructor
 public class Cart {
     @Id
-    private UUID userId;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
+    private Long userId;
+
+    @Setter
+    private double wallet;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CartItem> items;
 
-    public Cart() {
-
-    }
-
-    public Cart(UUID userId) {
+    public Cart(Long userId) {
         this.userId = userId;
         this.items = new ArrayList<>();
+        this.wallet = 0;
     }
 }
