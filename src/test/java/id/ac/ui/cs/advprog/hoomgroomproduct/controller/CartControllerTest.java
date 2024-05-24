@@ -55,7 +55,7 @@ class CartControllerTest {
 
         when(cartService.getCart(userId)).thenReturn(cart);
 
-        mockMvc.perform(get("/cart/{userId}", userId))
+        mockMvc.perform(get("/cart/get/{userId}", userId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.userId").value(userId))
                 .andExpect(jsonPath("$.items").isEmpty());
