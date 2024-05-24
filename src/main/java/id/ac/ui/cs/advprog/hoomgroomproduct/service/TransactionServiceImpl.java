@@ -42,6 +42,13 @@ public class TransactionServiceImpl implements TransactionService {
         double promoValue = Double.parseDouble(promoCodeUsed.substring(promoCodeUsed.length() - 2));
         double newPrice = totalPrice - (totalPrice * (promoValue/100));
 
+        double wallet = cart.getWallet();
+        if (wallet < newPrice) {
+            throw new IllegalStateException("Not enough balance in wallet");
+        } else {
+            cart.setWallet(wallet - newPrice);
+        }
+
         Transaction transaction = new TransactionBuilder()
                 .setUserId(userId)
                 .setItems(transactionItems)
