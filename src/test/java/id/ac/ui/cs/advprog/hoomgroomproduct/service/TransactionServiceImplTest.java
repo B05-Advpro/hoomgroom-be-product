@@ -46,6 +46,30 @@ class TransactionServiceImplTest {
     }
 
     @Test
+    void testCreateTransactionNotEnoughBalance() {
+        Long userId = 1L;
+        String productId = "ca1c1b7d-f5aa-4573-aeff-d01665cc88c8";
+        String name = "Meja";
+        double price = 25000;
+        int quantity = 2;
+        Cart cart = new Cart(userId);
+        CartItem cartItem = new CartItem(productId, name, price, quantity);
+        cart.getItems().add(cartItem);
+
+        TransactionRequestDto request = new TransactionRequestDto();
+        request.setUserId(1L);
+        request.setPromoCodeUsed("BELANJAHEMAT20");
+        request.setDeliveryMethod("MOTOR");
+
+        when(cartService.getCart(userId)).thenReturn(cart);
+
+        assertThrows(IllegalStateException.class, () -> {
+            Transaction transaction = transactionService.create(request);
+        });
+
+        verify(transactionRepository, times(0)).save(any(Transaction.class));
+    }
+    @Test
     void testCreateTransactionSuccess() {
         Long userId = 1L;
         String productId = "ca1c1b7d-f5aa-4573-aeff-d01665cc88c8";
@@ -53,6 +77,7 @@ class TransactionServiceImplTest {
         double price = 25000;
         int quantity = 2;
         Cart cart = new Cart(userId);
+        cart.setWallet(40000);
         CartItem cartItem = new CartItem(productId, name, price, quantity);
         cart.getItems().add(cartItem);
 
