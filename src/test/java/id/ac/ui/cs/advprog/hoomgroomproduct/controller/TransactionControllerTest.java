@@ -5,6 +5,7 @@ import id.ac.ui.cs.advprog.hoomgroomproduct.dto.TransactionRequestDto;
 import id.ac.ui.cs.advprog.hoomgroomproduct.model.Transaction;
 import id.ac.ui.cs.advprog.hoomgroomproduct.model.TransactionBuilder;
 import id.ac.ui.cs.advprog.hoomgroomproduct.model.TransactionItem;
+import id.ac.ui.cs.advprog.hoomgroomproduct.service.JwtService;
 import id.ac.ui.cs.advprog.hoomgroomproduct.service.TransactionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,7 +32,11 @@ class TransactionControllerTest {
     @MockBean
     private TransactionService transactionService;
 
+    @MockBean
+    private JwtService jwtService;
+
     Transaction transaction;
+    TransactionRequestDto request;
 
     @BeforeEach
     void setUp() {
@@ -47,38 +52,76 @@ class TransactionControllerTest {
                 .setUserId(1L)
                 .setDeliveryMethod("MOTOR")
                 .build();
+
+        this.request = new TransactionRequestDto();
+        request.setUserId(1L);
+        request.setPromoCodeUsed("BELANJAHEMAT20");
+        request.setDeliveryMethod("MOTOR");
     }
 
     @Test
     void testCreateTransaction() throws Exception {
-        TransactionRequestDto request = new TransactionRequestDto();
-        request.setUserId(1L);
-        request.setPromoCodeUsed("BELANJAHEMAT20");
-        request.setDeliveryMethod("MOTOR");
-
         when(transactionService.create(any(TransactionRequestDto.class))).thenReturn(this.transaction);
+        when(jwtService.isTokenValid(anyString())).thenReturn(true);
+        when(jwtService.extractRole(anyString())).thenReturn("USER");
 
         mockMvc.perform(post("/transaction/create")
                 .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer jwtToken")
                 .content(asJsonString(request)))
                 .andExpect(status().isOk());
 
         verify(transactionService, times(1)).create(any(TransactionRequestDto.class));
+        verify(jwtService, times(1)).isTokenValid(anyString());
+        verify(jwtService, times(1)).extractRole(anyString());
     }
 
     @Test
     void testCreateTransactionEmptyCart() throws Exception {
-        TransactionRequestDto request = new TransactionRequestDto();
-        request.setUserId(1L);
-        request.setPromoCodeUsed("BELANJAHEMAT20");
-        request.setDeliveryMethod("MOTOR");
-
         when(transactionService.create(any(TransactionRequestDto.class))).thenThrow(new IllegalStateException());
+        when(jwtService.isTokenValid(anyString())).thenReturn(true);
+        when(jwtService.extractRole(anyString())).thenReturn("USER");
 
         mockMvc.perform(post("/transaction/create")
                         .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer jwtToken")
                         .content(asJsonString(request)))
                         .andExpect(status().isBadRequest());
+
+        verify(jwtService, times(1)).isTokenValid(anyString());
+        verify(jwtService, times(1)).extractRole(anyString());
+    }
+
+    @Test
+    void testCreateTransactionInvalidToken() throws Exception {
+        when(transactionService.create(any(TransactionRequestDto.class))).thenThrow(new IllegalStateException());
+        when(jwtService.isTokenValid(anyString())).thenReturn(false);
+        when(jwtService.extractRole(anyString())).thenReturn("ADMIN");
+
+        mockMvc.perform(post("/transaction/create")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer jwtToken")
+                        .content(asJsonString(request)))
+                        .andExpect(status().isForbidden());
+
+        verify(jwtService, times(1)).isTokenValid(anyString());
+        verify(jwtService, times(0)).extractRole(anyString());
+    }
+
+    @Test
+    void testCreateTransactionInvalidRole() throws Exception {
+        when(transactionService.create(any(TransactionRequestDto.class))).thenThrow(new IllegalStateException());
+        when(jwtService.isTokenValid(anyString())).thenReturn(true);
+        when(jwtService.extractRole(anyString())).thenReturn("ADMIN");
+
+        mockMvc.perform(post("/transaction/create")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer jwtToken")
+                        .content(asJsonString(request)))
+                .andExpect(status().isForbidden());
+
+        verify(jwtService, times(1)).isTokenValid(anyString());
+        verify(jwtService, times(1)).extractRole(anyString());
     }
 
     @Test
@@ -123,7 +166,6 @@ class TransactionControllerTest {
     @Test
     void testGetTransactionByUserIdEmpty() throws Exception {
         Long userId = 1L;
-
         when(transactionService.getTransactionByUserId(userId)).thenReturn(Collections.emptyList());
 
         mockMvc.perform(get("/transaction/get/{userId}", userId))
