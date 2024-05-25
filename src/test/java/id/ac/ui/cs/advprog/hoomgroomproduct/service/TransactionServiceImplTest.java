@@ -28,70 +28,80 @@ class TransactionServiceImplTest {
     @InjectMocks
     TransactionServiceImpl transactionService;
 
-    @Test
-    void testCreateTransactionEmptyCart() {
-        Long userId = 1L;
-        Cart cart = new Cart(userId);
+    Long userId;
+    Cart cart;
+    TransactionRequestDto request;
 
-        TransactionRequestDto request = new TransactionRequestDto();
+    @BeforeEach
+    void setUp() {
+        this.userId = 1L;
+        String productId = "ca1c1b7d-f5aa-4573-aeff-d01665cc88c8";
+        String name = "Meja";
+        double price = 25000;
+        int quantity = 2;
+        CartItem cartItem = new CartItem(productId, name, price, quantity);
+
+        this.cart = new Cart(this.userId);
+        this.cart.setWallet(50000);
+        this.cart.getItems().add(cartItem);
+
+        this.request = new TransactionRequestDto();
         request.setUserId(1L);
         request.setPromoCodeUsed("BELANJAHEMAT20");
         request.setDeliveryMethod("MOTOR");
+    }
 
-        when(cartService.getCart(userId)).thenReturn(cart);
+    @Test
+    void testCreateTransactionEmptyCart() {
+        this.cart.getItems().clear();
 
-        assertThrows(IllegalStateException.class, () -> {
-            transactionService.create(request);
+        when(cartService.getCart(this.userId)).thenReturn(cart);
+
+        Exception e = assertThrows(IllegalStateException.class, () -> {
+            transactionService.create(this.request);
         });
+
+        assertEquals("Cart is empty", e.getMessage());
+
+        verify(cartService, times(1)).getCart(this.userId);
+        verify(transactionRepository, times(0)).save(any(Transaction.class));
     }
 
     @Test
     void testCreateTransactionNotEnoughBalance() {
-        Long userId = 1L;
-        String productId = "ca1c1b7d-f5aa-4573-aeff-d01665cc88c8";
-        String name = "Meja";
-        double price = 25000;
-        int quantity = 2;
-        Cart cart = new Cart(userId);
-        CartItem cartItem = new CartItem(productId, name, price, quantity);
-        cart.getItems().add(cartItem);
+        this.cart.setWallet(0);
 
-        TransactionRequestDto request = new TransactionRequestDto();
-        request.setUserId(1L);
-        request.setPromoCodeUsed("BELANJAHEMAT20");
-        request.setDeliveryMethod("MOTOR");
+        when(cartService.getCart(this.userId)).thenReturn(cart);
 
-        when(cartService.getCart(userId)).thenReturn(cart);
-
-        assertThrows(IllegalStateException.class, () -> {
-            Transaction transaction = transactionService.create(request);
+        Exception e = assertThrows(IllegalStateException.class, () -> {
+            Transaction transaction = transactionService.create(this.request);
         });
 
+        assertEquals("Not enough balance in wallet", e.getMessage());
+        verify(cartService, times(1)).getCart(this.userId);
         verify(transactionRepository, times(0)).save(any(Transaction.class));
     }
     @Test
     void testCreateTransactionSuccess() {
-        Long userId = 1L;
-        String productId = "ca1c1b7d-f5aa-4573-aeff-d01665cc88c8";
-        String name = "Meja";
-        double price = 25000;
-        int quantity = 2;
-        Cart cart = new Cart(userId);
-        cart.setWallet(40000);
-        CartItem cartItem = new CartItem(productId, name, price, quantity);
-        cart.getItems().add(cartItem);
+        when(cartService.getCart(this.userId)).thenReturn(cart);
 
-        TransactionRequestDto request = new TransactionRequestDto();
-        request.setUserId(1L);
-        request.setPromoCodeUsed("BELANJAHEMAT20");
-        request.setDeliveryMethod("MOTOR");
-
-        when(cartService.getCart(userId)).thenReturn(cart);
-
-        Transaction transaction = transactionService.create(request);
+        Transaction transaction = transactionService.create(this.request);
         assertNotNull(transaction);
-        assertEquals(userId, transaction.getUserId());
+        assertEquals(this.userId, transaction.getUserId());
         assertEquals(40000, transaction.getTotalPrice());
+        verify(transactionRepository, times(1)).save(any(Transaction.class));
+    }
+
+    @Test
+    void testCreateTransactionSuccessNoPromoCode() {
+        this.request.setPromoCodeUsed("");
+
+        when(cartService.getCart(this.userId)).thenReturn(cart);
+
+        Transaction transaction = transactionService.create(this.request);
+        assertNotNull(transaction);
+        assertEquals(this.userId, transaction.getUserId());
+        assertEquals(50000, transaction.getTotalPrice());
         verify(transactionRepository, times(1)).save(any(Transaction.class));
     }
 
