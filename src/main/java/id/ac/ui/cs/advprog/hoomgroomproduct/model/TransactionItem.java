@@ -1,5 +1,6 @@
 package id.ac.ui.cs.advprog.hoomgroomproduct.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,8 +19,9 @@ public class TransactionItem {
     private int quantity;
 
     @Setter
+    @JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "transaction_id")
+    @JoinColumn(name = "user_id")
     private Transaction transaction;
 
     public TransactionItem(String productId, String name, double price, int quantity) {

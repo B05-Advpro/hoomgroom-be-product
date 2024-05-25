@@ -19,7 +19,7 @@ public class Cart {
     @Setter
     private double wallet;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CartItem> items;
 
     public Cart(Long userId) {
