@@ -77,16 +77,16 @@ class TransactionControllerTest {
     }
 
     @Test
-    void testCreateTransactionEmptyCart() throws Exception {
+    void testCreateTransactionInvalid() throws Exception {
         when(transactionService.create(any(TransactionRequestDto.class))).thenThrow(new IllegalStateException());
         when(jwtService.isTokenValid(anyString())).thenReturn(true);
         when(jwtService.extractRole(anyString())).thenReturn("USER");
 
         mockMvc.perform(post("/transaction/create")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .header("Authorization", "Bearer jwtToken")
-                        .content(asJsonString(request)))
-                        .andExpect(status().isBadRequest());
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer jwtToken")
+                .content(asJsonString(request)))
+                .andExpect(status().isBadRequest());
 
         verify(jwtService, times(1)).isTokenValid(anyString());
         verify(jwtService, times(1)).extractRole(anyString());

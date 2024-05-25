@@ -28,12 +28,8 @@ public class TransactionController {
         if (!jwtService.isTokenValid(token) || !jwtService.extractRole(token).equals("USER")) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
         }
-        try {
-            Transaction transaction = transactionService.create(request);
-            return ResponseEntity.ok(transaction);
-        } catch (IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        }
+        Transaction transaction = transactionService.create(request);
+        return ResponseEntity.ok(transaction);
     }
 
     @GetMapping("/get-all")
@@ -46,5 +42,10 @@ public class TransactionController {
     public ResponseEntity<List<Transaction>> getTransactionByUserId(@PathVariable Long userId) {
         List<Transaction> transactions = transactionService.getTransactionByUserId(userId);
         return ResponseEntity.ok(transactions);
+    }
+
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<String> handleIllegalStateException(IllegalStateException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 }
