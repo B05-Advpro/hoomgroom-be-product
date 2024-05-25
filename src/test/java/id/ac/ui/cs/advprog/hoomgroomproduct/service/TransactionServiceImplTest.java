@@ -43,6 +43,7 @@ class TransactionServiceImplTest {
 
         this.cart = new Cart(this.userId);
         this.cart.setWallet(50000);
+        this.cart.setTotalPrice(50000);
         this.cart.getItems().add(cartItem);
 
         this.request = new TransactionRequestDto();

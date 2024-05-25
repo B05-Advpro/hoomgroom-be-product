@@ -31,14 +31,13 @@ public class TransactionServiceImpl implements TransactionService {
         List<CartItem> items = cart.getItems();
         List<TransactionItem> transactionItems = new ArrayList<>();
 
-        double totalPrice = 0;
         for (CartItem item : items) {
             TransactionItem transactionItem = new TransactionItem(item.getProductId(), item.getName(),
                     item.getPrice(), item.getQuantity());
-            totalPrice += item.getPrice() * item.getQuantity();
             transactionItems.add(transactionItem);
         }
 
+        double totalPrice = cart.getTotalPrice();
         if (promoCodeUsed != null && !promoCodeUsed.isEmpty()){
             double promoValue = Double.parseDouble(promoCodeUsed.substring(promoCodeUsed.length() - 2));
             totalPrice = totalPrice - (totalPrice * (promoValue/100));
