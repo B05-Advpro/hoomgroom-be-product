@@ -48,4 +48,15 @@ class CartTest {
         this.cart.setWallet(50000);
         assertEquals(50000, this.cart.getWallet());
     }
+
+    @Test
+    void getTotalPrice() {
+        assertEquals(25000, this.cart.getTotalPrice());
+    }
+
+    @Test
+    void setTotalPrice() {
+        this.cart.setTotalPrice(50000);
+        assertEquals(50000, this.cart.getTotalPrice());
+    }
 }

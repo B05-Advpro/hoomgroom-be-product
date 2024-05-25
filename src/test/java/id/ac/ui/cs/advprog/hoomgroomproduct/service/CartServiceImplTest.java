@@ -82,12 +82,13 @@ class CartServiceImplTest {
         when(cartRepository.findByUserId(this.userId)).thenReturn((Optional.of(this.cart)));
         when(cartRepository.save(any(Cart.class))).thenAnswer(i -> i.getArguments()[0]);
 
-        cartService.addItemToCart(this.cartDto);
+        Cart savedCart = cartService.addItemToCart(this.cartDto);
 
-        List<CartItem> items = cart.getItems();
+        List<CartItem> items = savedCart.getItems();
         assertEquals(1, items.size());
         assertEquals(this.cartDto.getProductId(), items.get(0).getProductId());
         assertEquals(this.cartDto.getQuantity(), items.get(0).getQuantity());
+        assertEquals(25000, savedCart.getTotalPrice());
         verify(cartRepository, times(1)).findByUserId(this.userId);
         verify(cartRepository, times(1)).save(this.cart);
     }
@@ -102,18 +103,21 @@ class CartServiceImplTest {
 
         this.cartDto.setQuantity(newQuantity);
 
-        cartService.addItemToCart(this.cartDto);
+        Cart savedCart = cartService.addItemToCart(this.cartDto);
 
-        List<CartItem> items = cart.getItems();
+        List<CartItem> items = savedCart.getItems();
         assertEquals(1, items.size());
         assertEquals(this.cartDto.getProductId(), items.get(0).getProductId());
         assertEquals(initialQuantity + newQuantity, items.get(0).getQuantity());
+        assertEquals(100000, savedCart.getTotalPrice());
         verify(cartRepository, times(1)).findByUserId(userId);
         verify(cartRepository, times(1)).save(cart);
     }
 
     @Test
     void testDeleteItemFromCart() {
+        this.cart.setTotalPrice(25000);
+
         when(cartRepository.findByUserId(this.userId)).thenReturn(Optional.of(this.cart));
         when(cartRepository.save(any(Cart.class))).thenAnswer(i -> i.getArguments()[0]);
 
@@ -124,18 +128,22 @@ class CartServiceImplTest {
         Cart savedCart = cartService.deleteItemFromCart(request);
 
         assertTrue(savedCart.getItems().isEmpty());
+        assertEquals(0, savedCart.getTotalPrice());
         verify(cartRepository, times(1)).findByUserId(this.userId);
         verify(cartRepository, times(1)).save(this.cart);
     }
 
     @Test
     void testClearShoppingCart() {
+        this.cart.setTotalPrice(25000);
+
         when(cartRepository.findByUserId(this.userId)).thenReturn(Optional.of(this.cart));
         when(cartRepository.save(any(Cart.class))).thenAnswer(i -> i.getArguments()[0]);
 
         Cart savedCart = cartService.clearCart(this.userId);
 
         assertTrue(savedCart.getItems().isEmpty());
+        assertEquals(0, savedCart.getTotalPrice());
         verify(cartRepository, times(1)).findByUserId(this.userId);
         verify(cartRepository, times(1)).save(this.cart);
     }
