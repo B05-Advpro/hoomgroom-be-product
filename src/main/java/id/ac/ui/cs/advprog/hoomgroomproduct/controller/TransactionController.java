@@ -2,6 +2,7 @@ package id.ac.ui.cs.advprog.hoomgroomproduct.controller;
 
 import id.ac.ui.cs.advprog.hoomgroomproduct.dto.TransactionRequestDto;
 import id.ac.ui.cs.advprog.hoomgroomproduct.model.Transaction;
+import id.ac.ui.cs.advprog.hoomgroomproduct.service.JwtService;
 import id.ac.ui.cs.advprog.hoomgroomproduct.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,8 +18,16 @@ public class TransactionController {
     @Autowired
     private TransactionService transactionService;
 
+    @Autowired
+    private JwtService jwtService;
+
     @PostMapping("/create")
-    public ResponseEntity<Transaction> createTransaction(@RequestBody TransactionRequestDto request) {
+    public ResponseEntity<Transaction> createTransaction(@RequestHeader(value = "Authorization") String token,
+                                                         @RequestBody TransactionRequestDto request) {
+        token = token.substring(7);
+        if (!jwtService.isTokenValid(token) || !jwtService.extractRole(token).equals("USER")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+        }
         try {
             Transaction transaction = transactionService.create(request);
             return ResponseEntity.ok(transaction);
