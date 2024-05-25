@@ -1,5 +1,6 @@
 package id.ac.ui.cs.advprog.hoomgroomproduct.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,8 +21,9 @@ public class CartItem {
     private int quantity;
 
     @Setter
+    @JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "cart_id")
+    @JoinColumn(name = "user_id")
     private Cart cart;
 
     public CartItem(String productId, String name, double price, int quantity) {
