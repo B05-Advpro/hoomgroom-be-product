@@ -23,7 +23,7 @@ public class CartItem {
     @Setter
     @JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "username")
     private Cart cart;
 
     public CartItem(String productId, String name, double price, int quantity) {

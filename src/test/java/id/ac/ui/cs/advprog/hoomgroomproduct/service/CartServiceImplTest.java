@@ -27,7 +27,7 @@ class CartServiceImplTest {
     @InjectMocks
     CartServiceImpl cartService;
 
-    String username = "user1";
+    String username = "dummy";
     Cart cart;
     CartDto cartDto;
 

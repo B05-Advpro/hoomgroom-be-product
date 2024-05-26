@@ -10,5 +10,5 @@ public interface TransactionService {
     public Transaction create(TransactionRequestDto request, String token);
     public void updateSales(List<TransactionItem> items, String token);
     public List<Transaction> getAll();
-    public List<Transaction> getTransactionByusername(String username);
+    public List<Transaction> getTransactionByUsername(String username);
 }

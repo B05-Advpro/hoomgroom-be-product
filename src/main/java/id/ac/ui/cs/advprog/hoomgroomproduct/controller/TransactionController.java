@@ -46,7 +46,8 @@ public class TransactionController {
         if (!jwtService.isTokenValid(token) || !jwtService.extractRole(token).equals("USER")) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
         }
-        List<Transaction> transactions = transactionService.getTransactionByusername(username);
+
+        List<Transaction> transactions = transactionService.getTransactionByUsername(username);
         return ResponseEntity.ok(transactions);
     }
 
