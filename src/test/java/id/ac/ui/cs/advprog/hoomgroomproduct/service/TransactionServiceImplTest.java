@@ -9,6 +9,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
@@ -34,6 +37,7 @@ class TransactionServiceImplTest {
     Long userId;
     Cart cart;
     TransactionRequestDto request;
+    String token;
 
     @BeforeEach
     void setUp() {
@@ -53,6 +57,8 @@ class TransactionServiceImplTest {
         request.setUserId(1L);
         request.setPromoCodeUsed("BELANJAHEMAT20");
         request.setDeliveryMethod("MOTOR");
+
+        this.token = "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiVVNFUiIsInN1YiI6ImR1bW15IiwiaWF0IjoxNzE2NzE3NzQ3LCJleHAiOjE3MTY3MTkxODd9.ofBphwX4VOnz_u9DhykKMdfd2rCBaQjJ9TCKcdG4qcg";
     }
 
     @Test
@@ -62,12 +68,17 @@ class TransactionServiceImplTest {
                         25000, 2)
         );
 
-        transactionService.updateSales(transactionItems);
+        transactionService.updateSales(transactionItems, this.token);
 
         Map<String, Integer> expectedSales = new HashMap<>();
         expectedSales.put("ca1c1b7d-f5aa-4573-aeff-d01665cc88c8", 2);
 
-        verify(restTemplate).postForEntity(eq("https://api.b5-hoomgroom.com/admin/product/sold"), eq(expectedSales), eq(Void.class));
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token);
+
+        HttpEntity<Map<String, Integer>> requestEntity = new HttpEntity<>(expectedSales, headers);
+
+        verify(restTemplate).exchange(eq("https://api.b5-hoomgroom.com/admin/product/sold"), eq(HttpMethod.POST), eq(requestEntity), eq(Void.class));
     }
 
     @Test
@@ -77,7 +88,7 @@ class TransactionServiceImplTest {
         when(cartService.getCart(this.userId)).thenReturn(cart);
 
         Exception e = assertThrows(IllegalStateException.class, () -> {
-            transactionService.create(this.request);
+            transactionService.create(this.request, this.token);
         });
 
         assertEquals("Cart is empty", e.getMessage());
@@ -94,7 +105,7 @@ class TransactionServiceImplTest {
         when(cartService.getCart(this.userId)).thenReturn(cart);
 
         Exception e = assertThrows(IllegalStateException.class, () -> {
-            Transaction transaction = transactionService.create(this.request);
+            Transaction transaction = transactionService.create(this.request, this.token);
         });
 
         assertEquals("Not enough balance in wallet", e.getMessage());
@@ -106,7 +117,7 @@ class TransactionServiceImplTest {
     void testCreateTransactionSuccess() {
         when(cartService.getCart(this.userId)).thenReturn(cart);
 
-        Transaction transaction = transactionService.create(this.request);
+        Transaction transaction = transactionService.create(this.request, this.token);
         assertNotNull(transaction);
         assertEquals(this.userId, transaction.getUserId());
         assertEquals(40000, transaction.getTotalPrice());
@@ -115,7 +126,12 @@ class TransactionServiceImplTest {
         Map<String, Integer> expectedSales = new HashMap<>();
         expectedSales.put("ca1c1b7d-f5aa-4573-aeff-d01665cc88c8", 2);
 
-        verify(restTemplate).postForEntity(eq("https://api.b5-hoomgroom.com/admin/product/sold"), eq(expectedSales), eq(Void.class));
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token);
+
+        HttpEntity<Map<String, Integer>> requestEntity = new HttpEntity<>(expectedSales, headers);
+
+        verify(restTemplate).exchange(eq("https://api.b5-hoomgroom.com/admin/product/sold"), eq(HttpMethod.POST), eq(requestEntity), eq(Void.class));
     }
 
     @Test
@@ -124,7 +140,7 @@ class TransactionServiceImplTest {
 
         when(cartService.getCart(this.userId)).thenReturn(cart);
 
-        Transaction transaction = transactionService.create(this.request);
+        Transaction transaction = transactionService.create(this.request, this.token);
         assertNotNull(transaction);
         assertEquals(this.userId, transaction.getUserId());
         assertEquals(50000, transaction.getTotalPrice());
@@ -133,7 +149,12 @@ class TransactionServiceImplTest {
         Map<String, Integer> expectedSales = new HashMap<>();
         expectedSales.put("ca1c1b7d-f5aa-4573-aeff-d01665cc88c8", 2);
 
-        verify(restTemplate).postForEntity(eq("https://api.b5-hoomgroom.com/admin/product/sold"), eq(expectedSales), eq(Void.class));
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token);
+
+        HttpEntity<Map<String, Integer>> requestEntity = new HttpEntity<>(expectedSales, headers);
+
+        verify(restTemplate).exchange(eq("https://api.b5-hoomgroom.com/admin/product/sold"), eq(HttpMethod.POST), eq(requestEntity), eq(Void.class));
     }
 
     @Test
