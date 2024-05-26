@@ -49,12 +49,12 @@ class TransactionControllerTest {
                 .setItems(items)
                 .setPromoCodeUsed("BELANJAHEMAT20")
                 .setTotalPrice(40000)
-                .setUserId(1L)
+                .setUsername("user1")
                 .setDeliveryMethod("MOTOR")
                 .build();
 
         this.request = new TransactionRequestDto();
-        request.setUserId(1L);
+        request.setUsername("user1");
         request.setPromoCodeUsed("BELANJAHEMAT20");
         request.setDeliveryMethod("MOTOR");
     }
@@ -128,17 +128,17 @@ class TransactionControllerTest {
 
     @Test
     void testGetAll() throws Exception {
-        Long userId1 = 1L;
-        Long userId2 = 2L;
-        Transaction transaction1 = new TransactionBuilder().setUserId(userId1).setDeliveryMethod("MOTOR").build();
-        Transaction transaction2 = new TransactionBuilder().setUserId(userId2).setDeliveryMethod("PESAWAT").build();
+        String username1 = "user1";
+        String username2 = "user2";
+        Transaction transaction1 = new TransactionBuilder().setUsername(username1).setDeliveryMethod("MOTOR").build();
+        Transaction transaction2 = new TransactionBuilder().setUsername(username2).setDeliveryMethod("PESAWAT").build();
 
         when(transactionService.getAll()).thenReturn(Arrays.asList(transaction1, transaction2));
 
         mockMvc.perform(get("/transaction/get-all"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].userId").value(userId1))
-                .andExpect(jsonPath("$[1].userId").value(userId2));
+                .andExpect(jsonPath("$[0].username").value(username1))
+                .andExpect(jsonPath("$[1].username").value(username2));
     }
 
     @Test
@@ -152,35 +152,35 @@ class TransactionControllerTest {
     }
 
     @Test
-    void testGetTransactionByUserId() throws Exception {
-        long userId = 1L;
-        Transaction transaction1 = new TransactionBuilder().setUserId(userId).setDeliveryMethod("MOTOR").build();
-        Transaction transaction2 = new TransactionBuilder().setUserId(userId).setDeliveryMethod("PESAWAT").build();
+    void testGetTransactionByusername() throws Exception {
+        String username = "user1";
+        Transaction transaction1 = new TransactionBuilder().setUsername(username).setDeliveryMethod("MOTOR").build();
+        Transaction transaction2 = new TransactionBuilder().setUsername(username).setDeliveryMethod("PESAWAT").build();
 
         when(jwtService.isTokenValid(anyString())).thenReturn(true);
         when(jwtService.extractRole(anyString())).thenReturn("USER");
-        when(transactionService.getTransactionByUserId(userId)).thenReturn(Arrays.asList(transaction1, transaction2));
+        when(transactionService.getTransactionByusername(username)).thenReturn(Arrays.asList(transaction1, transaction2));
 
-        mockMvc.perform(get("/transaction/get/{userId}", userId)
+        mockMvc.perform(get("/transaction/get/{username}", username)
                 .header("Authorization", "Bearer jwtToken"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].userId").value(userId))
-                .andExpect(jsonPath("$[1].userId").value(userId));
+                .andExpect(jsonPath("$[0].username").value(username))
+                .andExpect(jsonPath("$[1].username").value(username));
 
         verify(jwtService, times(1)).isTokenValid(anyString());
         verify(jwtService, times(1)).extractRole(anyString());
-        verify(transactionService, times(1)).getTransactionByUserId(userId);
+        verify(transactionService, times(1)).getTransactionByusername(username);
     }
 
     @Test
-    void testGetTransactionByUserIdEmpty() throws Exception {
-        Long userId = 1L;
+    void testGetTransactionByusernameEmpty() throws Exception {
+        String username = "user1";
 
         when(jwtService.isTokenValid(anyString())).thenReturn(true);
         when(jwtService.extractRole(anyString())).thenReturn("USER");
-        when(transactionService.getTransactionByUserId(userId)).thenReturn(Collections.emptyList());
+        when(transactionService.getTransactionByusername(username)).thenReturn(Collections.emptyList());
 
-        mockMvc.perform(get("/transaction/get/{userId}", userId)
+        mockMvc.perform(get("/transaction/get/{username}", username)
                 .header("Authorization", "Bearer jwtToken"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
@@ -188,38 +188,38 @@ class TransactionControllerTest {
 
         verify(jwtService, times(1)).isTokenValid(anyString());
         verify(jwtService, times(1)).extractRole(anyString());
-        verify(transactionService, times(1)).getTransactionByUserId(userId);
+        verify(transactionService, times(1)).getTransactionByusername(username);
     }
 
     @Test
-    void testGetTransactionByUserIdInvalidToken() throws Exception {
-        Long userId = 1L;
+    void testGetTransactionByusernameInvalidToken() throws Exception {
+        String username = "user1";
 
         when(jwtService.isTokenValid(anyString())).thenReturn(false);
 
-        mockMvc.perform(get("/transaction/get/{userId}", userId)
+        mockMvc.perform(get("/transaction/get/{username}", username)
                 .header("Authorization", "Bearer jwtToken"))
                 .andExpect(status().isForbidden());
 
         verify(jwtService, times(1)).isTokenValid(anyString());
         verify(jwtService, times(0)).extractRole(anyString());
-        verify(transactionService, times(0)).getTransactionByUserId(userId);
+        verify(transactionService, times(0)).getTransactionByusername(username);
     }
 
     @Test
-    void testGetTransactionByUserIdInvalidRole() throws Exception {
-        Long userId = 1L;
+    void testGetTransactionByusernameInvalidRole() throws Exception {
+        String username = "user1";
 
         when(jwtService.isTokenValid(anyString())).thenReturn(true);
         when(jwtService.extractRole(anyString())).thenReturn("ADMIN");
 
-        mockMvc.perform(get("/transaction/get/{userId}", userId)
+        mockMvc.perform(get("/transaction/get/{username}", username)
                         .header("Authorization", "Bearer jwtToken"))
                 .andExpect(status().isForbidden());
 
         verify(jwtService, times(1)).isTokenValid(anyString());
         verify(jwtService, times(1)).extractRole(anyString());
-        verify(transactionService, times(0)).getTransactionByUserId(userId);
+        verify(transactionService, times(0)).getTransactionByusername(username);
     }
 
     private static String asJsonString(final Object obj) {

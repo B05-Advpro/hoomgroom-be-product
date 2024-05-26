@@ -9,5 +9,5 @@ import java.util.UUID;
 
 @Repository
 public interface CartRepository extends JpaRepository<Cart, String> {
-    Optional<Cart> findByUserId(Long userId);
+    Optional<Cart> findByUsername(String username);
 }

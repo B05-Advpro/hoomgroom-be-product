@@ -14,7 +14,7 @@ public class Cart {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
-    private Long userId;
+    private String username;
 
     @Setter
     private double wallet;
@@ -25,8 +25,8 @@ public class Cart {
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CartItem> items;
 
-    public Cart(Long userId) {
-        this.userId = userId;
+    public Cart(String username) {
+        this.username = username;
         this.items = new ArrayList<>();
         this.wallet = 0;
         this.totalPrice = 0;

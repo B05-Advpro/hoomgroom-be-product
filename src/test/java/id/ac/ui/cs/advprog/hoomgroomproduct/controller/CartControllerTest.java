@@ -39,14 +39,14 @@ class CartControllerTest {
 
     @BeforeEach
     void setUp() {
-        Long userId = 1L;
+        String username = "user1";
         String productId = "ca1c1b7d-f5aa-4573-aeff-d01665cc88c8";
         String name = "Meja";
         double price = 25000;
         int quantity = 1;
 
         this.request = new CartDto();
-        this.request.setUserId(userId);
+        this.request.setUsername(username);
         this.request.setProductId(productId);
         this.request.setName(name);
         this.request.setPrice(price);
@@ -55,61 +55,61 @@ class CartControllerTest {
         double amount = 50000;
 
         this.topUpRequest = new TopUpDto();
-        this.topUpRequest.setUserId(userId);
+        this.topUpRequest.setUsername(username);
         this.topUpRequest.setAmount(amount);
     }
 
     @Test
     void testGetCartSuccess() throws Exception {
-        Long userId = request.getUserId();
-        Cart cart = new Cart(userId);
+        String username = request.getUsername();
+        Cart cart = new Cart(username);
 
-        when(cartService.getCart(userId)).thenReturn(cart);
+        when(cartService.getCart(username)).thenReturn(cart);
         when(jwtService.isTokenValid(anyString())).thenReturn(true);
         when(jwtService.extractRole(anyString())).thenReturn("USER");
 
-        mockMvc.perform(get("/cart/get/{userId}", userId)
+        mockMvc.perform(get("/cart/get/{username}", username)
                 .header("Authorization", "Bearer jwtToken"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.userId").value(userId))
+                .andExpect(jsonPath("$.username").value(username))
                 .andExpect(jsonPath("$.items").isEmpty());
 
-        verify(cartService, times(1)).getCart(userId);
+        verify(cartService, times(1)).getCart(username);
         verify(jwtService, times(1)).isTokenValid(anyString());
         verify(jwtService, times(1)).extractRole(anyString());
     }
 
     @Test
     void testGetCartInvalidToken() throws Exception {
-        Long userId = request.getUserId();
-        Cart cart = new Cart(userId);
+        String username = request.getUsername();
+        Cart cart = new Cart(username);
 
         when(jwtService.isTokenValid(anyString())).thenReturn(false);
 
-        mockMvc.perform(get("/cart/get/{userId}", userId)
+        mockMvc.perform(get("/cart/get/{username}", username)
                         .header("Authorization", "Bearer jwtToken"))
                 .andExpect(status().isForbidden());
 
         verify(jwtService, times(1)).isTokenValid(anyString());
         verify(jwtService, times(0)).extractRole(anyString());
-        verify(cartService, times(0)).getCart(userId);
+        verify(cartService, times(0)).getCart(username);
     }
 
     @Test
     void testGetCartInvalidRole() throws Exception {
-        Long userId = request.getUserId();
-        Cart cart = new Cart(userId);
+        String username = request.getUsername();
+        Cart cart = new Cart(username);
 
         when(jwtService.isTokenValid(anyString())).thenReturn(true);
         when(jwtService.extractRole(anyString())).thenReturn("ADMIN");
 
-        mockMvc.perform(get("/cart/get/{userId}", userId)
+        mockMvc.perform(get("/cart/get/{username}", username)
                         .header("Authorization", "Bearer jwtToken"))
                 .andExpect(status().isForbidden());
 
         verify(jwtService, times(1)).isTokenValid(anyString());
         verify(jwtService, times(1)).extractRole(anyString());
-        verify(cartService, times(0)).getCart(userId);
+        verify(cartService, times(0)).getCart(username);
     }
 
     @Test
@@ -211,26 +211,26 @@ class CartControllerTest {
         when(jwtService.isTokenValid(anyString())).thenReturn(true);
         when(jwtService.extractRole(anyString())).thenReturn("USER");
 
-        mockMvc.perform(post("/cart/clear-cart/{userId}", request.getUserId())
+        mockMvc.perform(post("/cart/clear-cart/{username}", request.getUsername())
                 .header("Authorization", "Bearer jwtToken"))
                 .andExpect(status().isOk());
 
         verify(jwtService, times(1)).isTokenValid(anyString());
         verify(jwtService, times(1)).extractRole(anyString());
-        verify(cartService, times(1)).clearCart(request.getUserId());
+        verify(cartService, times(1)).clearCart(request.getUsername());
     }
 
     @Test
     void testClearCartInvalidToken() throws Exception {
         when(jwtService.isTokenValid(anyString())).thenReturn(false);
 
-        mockMvc.perform(post("/cart/clear-cart/{userId}", request.getUserId())
+        mockMvc.perform(post("/cart/clear-cart/{username}", request.getUsername())
                 .header("Authorization", "Bearer jwtToken"))
                 .andExpect(status().isForbidden());
 
         verify(jwtService, times(1)).isTokenValid(anyString());
         verify(jwtService, times(0)).extractRole(anyString());
-        verify(cartService, times(0)).clearCart(request.getUserId());
+        verify(cartService, times(0)).clearCart(request.getUsername());
     }
 
     @Test
@@ -238,13 +238,13 @@ class CartControllerTest {
         when(jwtService.isTokenValid(anyString())).thenReturn(true);
         when(jwtService.extractRole(anyString())).thenReturn("ADMIN");
 
-        mockMvc.perform(post("/cart/clear-cart/{userId}", request.getUserId())
+        mockMvc.perform(post("/cart/clear-cart/{username}", request.getUsername())
                 .header("Authorization", "Bearer jwtToken"))
                 .andExpect(status().isForbidden());
 
         verify(jwtService, times(1)).isTokenValid(anyString());
         verify(jwtService, times(1)).extractRole(anyString());
-        verify(cartService, times(0)).clearCart(request.getUserId());
+        verify(cartService, times(0)).clearCart(request.getUsername());
     }
 
     @Test
