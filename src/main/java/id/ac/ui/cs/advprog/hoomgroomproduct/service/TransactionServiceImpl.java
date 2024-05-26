@@ -4,6 +4,10 @@ import id.ac.ui.cs.advprog.hoomgroomproduct.dto.TransactionRequestDto;
 import id.ac.ui.cs.advprog.hoomgroomproduct.model.*;
 import id.ac.ui.cs.advprog.hoomgroomproduct.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -22,7 +26,7 @@ public class TransactionServiceImpl implements TransactionService {
     private RestTemplate restTemplate;
 
     @Override
-    public Transaction create(TransactionRequestDto request) {
+    public Transaction create(TransactionRequestDto request, String token) {
         Long userId = request.getUserId();
         String promoCodeUsed = request.getPromoCodeUsed();
         String deliverMethod = request.getDeliveryMethod();
@@ -65,21 +69,25 @@ public class TransactionServiceImpl implements TransactionService {
         transactionItems.forEach(item -> item.setTransaction(transaction));
         transactionRepository.save(transaction);
         cartService.clearCart(userId);
-        updateSales(transactionItems);
+        updateSales(transactionItems, token);
         return transaction;
     }
 
-    public void updateSales(List<TransactionItem> transactionItems) {
+    public void updateSales(List<TransactionItem> transactionItems, String token) {
         Map<String, Integer> salesUpdate = new HashMap<>();
 
         for (TransactionItem item : transactionItems) {
             salesUpdate.put(String.valueOf(item.getProductId()), item.getQuantity());
         }
 
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token);
+
+        HttpEntity<Map<String, Integer>> requestEntity = new HttpEntity<>(salesUpdate, headers);
         try {
-            restTemplate.postForEntity("https://api.b5-hoomgroom.com/admin/product/sold", salesUpdate, Void.class);
+            restTemplate.exchange("https://api.b5-hoomgroom.com/admin/product/sold", HttpMethod.POST, requestEntity, Void.class);
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new IllegalStateException();
         }
     }
 

@@ -25,11 +25,11 @@ public class TransactionController {
     @PostMapping("/create")
     public ResponseEntity<Transaction> createTransaction(@RequestHeader(value = "Authorization") String token,
                                                          @RequestBody TransactionRequestDto request) {
-        token = token.substring(7);
-        if (!jwtService.isTokenValid(token) || !jwtService.extractRole(token).equals("USER")) {
+        String newToken = token.substring(7);
+        if (!jwtService.isTokenValid(newToken) || !jwtService.extractRole(newToken).equals("USER")) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
         }
-        Transaction transaction = transactionService.create(request);
+        Transaction transaction = transactionService.create(request, token);
         return ResponseEntity.ok(transaction);
     }
 
