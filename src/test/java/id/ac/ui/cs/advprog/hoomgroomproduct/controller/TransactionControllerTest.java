@@ -61,7 +61,7 @@ class TransactionControllerTest {
 
     @Test
     void testCreateTransaction() throws Exception {
-        when(transactionService.create(any(TransactionRequestDto.class))).thenReturn(this.transaction);
+        when(transactionService.create(any(TransactionRequestDto.class), anyString())).thenReturn(this.transaction);
         when(jwtService.isTokenValid(anyString())).thenReturn(true);
         when(jwtService.extractRole(anyString())).thenReturn("USER");
 
@@ -73,12 +73,12 @@ class TransactionControllerTest {
 
         verify(jwtService, times(1)).isTokenValid(anyString());
         verify(jwtService, times(1)).extractRole(anyString());
-        verify(transactionService, times(1)).create(any(TransactionRequestDto.class));
+        verify(transactionService, times(1)).create(any(TransactionRequestDto.class), anyString());
     }
 
     @Test
     void testCreateTransactionInvalid() throws Exception {
-        when(transactionService.create(any(TransactionRequestDto.class))).thenThrow(new IllegalStateException());
+        when(transactionService.create(any(TransactionRequestDto.class), anyString())).thenThrow(new IllegalStateException());
         when(jwtService.isTokenValid(anyString())).thenReturn(true);
         when(jwtService.extractRole(anyString())).thenReturn("USER");
 
@@ -90,12 +90,12 @@ class TransactionControllerTest {
 
         verify(jwtService, times(1)).isTokenValid(anyString());
         verify(jwtService, times(1)).extractRole(anyString());
-        verify(transactionService, times(1)).create(any(TransactionRequestDto.class));
+        verify(transactionService, times(1)).create(any(TransactionRequestDto.class), anyString());
     }
 
     @Test
     void testCreateTransactionInvalidToken() throws Exception {
-        when(transactionService.create(any(TransactionRequestDto.class))).thenThrow(new IllegalStateException());
+        when(transactionService.create(any(TransactionRequestDto.class), anyString())).thenThrow(new IllegalStateException());
         when(jwtService.isTokenValid(anyString())).thenReturn(false);
 
         mockMvc.perform(post("/transaction/create")
@@ -106,12 +106,12 @@ class TransactionControllerTest {
 
         verify(jwtService, times(1)).isTokenValid(anyString());
         verify(jwtService, times(0)).extractRole(anyString());
-        verify(transactionService, times(0)).create(any(TransactionRequestDto.class));
+        verify(transactionService, times(0)).create(any(TransactionRequestDto.class), anyString());
     }
 
     @Test
     void testCreateTransactionInvalidRole() throws Exception {
-        when(transactionService.create(any(TransactionRequestDto.class))).thenThrow(new IllegalStateException());
+        when(transactionService.create(any(TransactionRequestDto.class), anyString())).thenThrow(new IllegalStateException());
         when(jwtService.isTokenValid(anyString())).thenReturn(true);
         when(jwtService.extractRole(anyString())).thenReturn("ADMIN");
 
@@ -123,7 +123,7 @@ class TransactionControllerTest {
 
         verify(jwtService, times(1)).isTokenValid(anyString());
         verify(jwtService, times(1)).extractRole(anyString());
-        verify(transactionService, times(0)).create(any(TransactionRequestDto.class));
+        verify(transactionService, times(0)).create(any(TransactionRequestDto.class), anyString());
     }
 
     @Test
