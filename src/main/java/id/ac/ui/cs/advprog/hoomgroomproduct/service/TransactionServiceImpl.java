@@ -5,6 +5,7 @@ import id.ac.ui.cs.advprog.hoomgroomproduct.model.*;
 import id.ac.ui.cs.advprog.hoomgroomproduct.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
 
@@ -16,6 +17,9 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Autowired
     private CartService cartService;
+
+    @Autowired
+    private RestTemplate restTemplate;
 
     @Override
     public Transaction create(TransactionRequestDto request) {
@@ -31,14 +35,13 @@ public class TransactionServiceImpl implements TransactionService {
         List<CartItem> items = cart.getItems();
         List<TransactionItem> transactionItems = new ArrayList<>();
 
-        double totalPrice = 0;
         for (CartItem item : items) {
             TransactionItem transactionItem = new TransactionItem(item.getProductId(), item.getName(),
                     item.getPrice(), item.getQuantity());
-            totalPrice += item.getPrice() * item.getQuantity();
             transactionItems.add(transactionItem);
         }
 
+        double totalPrice = cart.getTotalPrice();
         if (promoCodeUsed != null && !promoCodeUsed.isEmpty()){
             double promoValue = Double.parseDouble(promoCodeUsed.substring(promoCodeUsed.length() - 2));
             totalPrice = totalPrice - (totalPrice * (promoValue/100));
@@ -62,7 +65,22 @@ public class TransactionServiceImpl implements TransactionService {
         transactionItems.forEach(item -> item.setTransaction(transaction));
         transactionRepository.save(transaction);
         cartService.clearCart(userId);
+        updateSales(transactionItems);
         return transaction;
+    }
+
+    public void updateSales(List<TransactionItem> transactionItems) {
+        Map<String, Integer> salesUpdate = new HashMap<>();
+
+        for (TransactionItem item : transactionItems) {
+            salesUpdate.put(String.valueOf(item.getProductId()), item.getQuantity());
+        }
+
+        try {
+            restTemplate.postForEntity("https://api.b5-hoomgroom.com/admin/product/sold", salesUpdate, Void.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

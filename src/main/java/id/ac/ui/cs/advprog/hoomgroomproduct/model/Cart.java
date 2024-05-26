@@ -19,6 +19,9 @@ public class Cart {
     @Setter
     private double wallet;
 
+    @Setter
+    private double totalPrice;
+
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CartItem> items;
 
@@ -26,5 +29,6 @@ public class Cart {
         this.userId = userId;
         this.items = new ArrayList<>();
         this.wallet = 0;
+        this.totalPrice = 0;
     }
 }

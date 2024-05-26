@@ -16,9 +16,9 @@ class CartTest {
     void setUp() {
         CartItem cartItem = new CartItem("ca1c1b7d-f5aa-4573-aeff-d01665cc88c8",
                 "Meja", 25000, 1);
-
         this.cart = new Cart(1L);
         this.cart.getItems().add(cartItem);
+        this.cart.setTotalPrice(25000);
         this.cartItems = new ArrayList<>();
         this.cartItems.add(cartItem);
     }
@@ -47,5 +47,16 @@ class CartTest {
     void setWallet() {
         this.cart.setWallet(50000);
         assertEquals(50000, this.cart.getWallet());
+    }
+
+    @Test
+    void getTotalPrice() {
+        assertEquals(25000, this.cart.getTotalPrice());
+    }
+
+    @Test
+    void setTotalPrice() {
+        this.cart.setTotalPrice(50000);
+        assertEquals(50000, this.cart.getTotalPrice());
     }
 }

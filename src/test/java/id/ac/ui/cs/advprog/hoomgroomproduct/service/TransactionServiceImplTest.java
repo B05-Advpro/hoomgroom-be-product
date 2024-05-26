@@ -9,9 +9,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -24,6 +24,9 @@ class TransactionServiceImplTest {
 
     @Mock
     TransactionRepository transactionRepository;
+
+    @Mock
+    private RestTemplate restTemplate;
 
     @InjectMocks
     TransactionServiceImpl transactionService;
@@ -43,12 +46,28 @@ class TransactionServiceImplTest {
 
         this.cart = new Cart(this.userId);
         this.cart.setWallet(50000);
+        this.cart.setTotalPrice(50000);
         this.cart.getItems().add(cartItem);
 
         this.request = new TransactionRequestDto();
         request.setUserId(1L);
         request.setPromoCodeUsed("BELANJAHEMAT20");
         request.setDeliveryMethod("MOTOR");
+    }
+
+    @Test
+    void testUpdateSales() {
+        List<TransactionItem> transactionItems = Arrays.asList(
+                new TransactionItem("ca1c1b7d-f5aa-4573-aeff-d01665cc88c8", "Meja",
+                        25000, 2)
+        );
+
+        transactionService.updateSales(transactionItems);
+
+        Map<String, Integer> expectedSales = new HashMap<>();
+        expectedSales.put("ca1c1b7d-f5aa-4573-aeff-d01665cc88c8", 2);
+
+        verify(restTemplate).postForEntity(eq("https://api.b5-hoomgroom.com/admin/product/sold"), eq(expectedSales), eq(Void.class));
     }
 
     @Test
@@ -65,6 +84,7 @@ class TransactionServiceImplTest {
 
         verify(cartService, times(1)).getCart(this.userId);
         verify(transactionRepository, times(0)).save(any(Transaction.class));
+        verify(restTemplate, times(0)).postForEntity(anyString(), anyMap(), eq(Void.class));
     }
 
     @Test
@@ -80,6 +100,7 @@ class TransactionServiceImplTest {
         assertEquals("Not enough balance in wallet", e.getMessage());
         verify(cartService, times(1)).getCart(this.userId);
         verify(transactionRepository, times(0)).save(any(Transaction.class));
+        verify(restTemplate, times(0)).postForEntity(anyString(), anyMap(), eq(Void.class));
     }
     @Test
     void testCreateTransactionSuccess() {
@@ -90,6 +111,11 @@ class TransactionServiceImplTest {
         assertEquals(this.userId, transaction.getUserId());
         assertEquals(40000, transaction.getTotalPrice());
         verify(transactionRepository, times(1)).save(any(Transaction.class));
+
+        Map<String, Integer> expectedSales = new HashMap<>();
+        expectedSales.put("ca1c1b7d-f5aa-4573-aeff-d01665cc88c8", 2);
+
+        verify(restTemplate).postForEntity(eq("https://api.b5-hoomgroom.com/admin/product/sold"), eq(expectedSales), eq(Void.class));
     }
 
     @Test
@@ -103,6 +129,11 @@ class TransactionServiceImplTest {
         assertEquals(this.userId, transaction.getUserId());
         assertEquals(50000, transaction.getTotalPrice());
         verify(transactionRepository, times(1)).save(any(Transaction.class));
+
+        Map<String, Integer> expectedSales = new HashMap<>();
+        expectedSales.put("ca1c1b7d-f5aa-4573-aeff-d01665cc88c8", 2);
+
+        verify(restTemplate).postForEntity(eq("https://api.b5-hoomgroom.com/admin/product/sold"), eq(expectedSales), eq(Void.class));
     }
 
     @Test

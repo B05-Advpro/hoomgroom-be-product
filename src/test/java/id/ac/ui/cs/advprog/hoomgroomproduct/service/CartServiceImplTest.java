@@ -5,6 +5,7 @@ import id.ac.ui.cs.advprog.hoomgroomproduct.dto.TopUpDto;
 import id.ac.ui.cs.advprog.hoomgroomproduct.model.Cart;
 import id.ac.ui.cs.advprog.hoomgroomproduct.model.CartItem;
 import id.ac.ui.cs.advprog.hoomgroomproduct.repository.CartRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -26,167 +27,140 @@ class CartServiceImplTest {
     @InjectMocks
     CartServiceImpl cartService;
 
+    Long userId = 1L;
+    Cart cart;
+    CartDto cartDto;
+
+    @BeforeEach
+    void setUp() {
+        String productId = "ca1c1b7d-f5aa-4573-aeff-d01665cc88c8";
+        String name = "Meja";
+        double price = 25000;
+        int quantity = 1;
+        CartItem cartItem = new CartItem(productId, name, price, quantity);
+
+        this.cart = new Cart(this.userId);
+        this.cart.getItems().add(cartItem);
+
+        cartDto = new CartDto();
+        cartDto.setUserId(this.userId);
+        cartDto.setProductId(productId);
+        cartDto.setName(name);
+        cartDto.setPrice(price);
+        cartDto.setQuantity(quantity);
+    }
+
     @Test
     void testGetNewCart() {
-        Long userId = 1L;
-
-        when(cartRepository.findByUserId(userId)).thenReturn(Optional.empty());
+        when(cartRepository.findByUserId(this.userId)).thenReturn(Optional.empty());
         when(cartRepository.save(any(Cart.class))).thenAnswer(i -> i.getArguments()[0]);
 
-        Cart cart = cartService.getCart(userId);
+        Cart cart = cartService.getCart(this.userId);
+
         assertNotNull(cart);
-        assertEquals(userId, cart.getUserId());
-        verify(cartRepository, times(1)).findByUserId(userId);
+        assertEquals(this.userId, cart.getUserId());
+        verify(cartRepository, times(1)).findByUserId(this.userId);
         verify(cartRepository, times(1)).save(any(Cart.class));
     }
 
     @Test
     void testGetExistingCart() {
-        Long userId = 1L;
-        Cart existingCart = new Cart(userId);
+        when(cartRepository.findByUserId(this.userId)).thenReturn(Optional.of(this.cart));
 
-        when(cartRepository.findByUserId(userId)).thenReturn(Optional.of(existingCart));
-
-        Cart cart = cartService.getCart(userId);
+        Cart cart = cartService.getCart(this.userId);
 
         assertNotNull(cart);
-        assertEquals(userId, cart.getUserId());
-        verify(cartRepository, times(1)).findByUserId(userId);
+        assertEquals(this.userId, cart.getUserId());
+        verify(cartRepository, times(1)).findByUserId(this.userId);
         verify(cartRepository, times(0)).save(any(Cart.class));
     }
 
     @Test
     void testAddNewItemToCart() {
-        Long userId = 1L;
-        String productId = "ca1c1b7d-f5aa-4573-aeff-d01665cc88c8";
-        String name = "Meja";
-        double price = 25000;
-        int quantity = 1;
-        Cart cart = new Cart(userId);
+        this.cart.getItems().clear();
 
-        when(cartRepository.findByUserId(userId)).thenReturn((Optional.of(cart)));
+        when(cartRepository.findByUserId(this.userId)).thenReturn((Optional.of(this.cart)));
         when(cartRepository.save(any(Cart.class))).thenAnswer(i -> i.getArguments()[0]);
 
-        CartDto request = new CartDto();
-        request.setUserId(userId);
-        request.setProductId(productId);
-        request.setName(name);
-        request.setPrice(price);
-        request.setQuantity(quantity);
+        Cart savedCart = cartService.addItemToCart(this.cartDto);
 
-        cartService.addItemToCart(request);
-
-        List<CartItem> items = cart.getItems();
+        List<CartItem> items = savedCart.getItems();
         assertEquals(1, items.size());
-        assertEquals(productId, items.get(0).getProductId());
-        assertEquals(quantity, items.get(0).getQuantity());
-        verify(cartRepository, times(1)).findByUserId(userId);
-        verify(cartRepository, times(1)).save(cart);
+        assertEquals(this.cartDto.getProductId(), items.get(0).getProductId());
+        assertEquals(this.cartDto.getQuantity(), items.get(0).getQuantity());
+        assertEquals(25000, savedCart.getTotalPrice());
+        verify(cartRepository, times(1)).findByUserId(this.userId);
+        verify(cartRepository, times(1)).save(this.cart);
     }
 
     @Test
     void testAddExistingItemToCart() {
-        Long userId = 1L;
-        String productId = "ca1c1b7d-f5aa-4573-aeff-d01665cc88c8";
-        String name = "Meja";
-        double price = 25000;
-        int initialQuantity = 1;
+        int initialQuantity = this.cartDto.getQuantity();
         int newQuantity = 3;
-        Cart cart = new Cart(userId);
-        CartItem cartIem = new CartItem(productId, name, price, initialQuantity);
-        cart.getItems().add(cartIem);
 
-        when(cartRepository.findByUserId(userId)).thenReturn((Optional.of(cart)));
+        when(cartRepository.findByUserId(this.userId)).thenReturn((Optional.of(this.cart)));
         when(cartRepository.save(any(Cart.class))).thenAnswer(i -> i.getArguments()[0]);
 
-        CartDto request = new CartDto();
-        request.setUserId(userId);
-        request.setProductId(productId);
-        request.setName(name);
-        request.setPrice(price);
-        request.setQuantity(newQuantity);
+        this.cartDto.setQuantity(newQuantity);
 
-        cartService.addItemToCart(request);
+        Cart savedCart = cartService.addItemToCart(this.cartDto);
 
-        List<CartItem> items = cart.getItems();
+        List<CartItem> items = savedCart.getItems();
         assertEquals(1, items.size());
-        assertEquals(productId, items.get(0).getProductId());
+        assertEquals(this.cartDto.getProductId(), items.get(0).getProductId());
         assertEquals(initialQuantity + newQuantity, items.get(0).getQuantity());
+        assertEquals(100000, savedCart.getTotalPrice());
         verify(cartRepository, times(1)).findByUserId(userId);
         verify(cartRepository, times(1)).save(cart);
     }
 
     @Test
     void testDeleteItemFromCart() {
-        Long userId = 1L;
-        String productId1 = "ca1c1b7d-f5aa-4573-aeff-d01665cc88c8";
-        String name1 = "Meja";
-        double price1 = 25000;
-        int quantity1 = 1;
-        CartItem cartIem1 = new CartItem(productId1, name1, price1, quantity1);
+        this.cart.setTotalPrice(25000);
 
-        String productId2 = "df6c1b7d-f5aa-4573-aeff-d01665cc88c8";
-        String name2 = "Kursi";
-        double price2 = 10000;
-        int quantity2 = 2;
-        CartItem cartIem2 = new CartItem(productId2, name2, price2, quantity2);
-
-        Cart cart = new Cart(userId);
-        cart.getItems().add(cartIem1);
-        cart.getItems().add(cartIem2);
-
-        when(cartRepository.findByUserId(userId)).thenReturn(Optional.of(cart));
+        when(cartRepository.findByUserId(this.userId)).thenReturn(Optional.of(this.cart));
         when(cartRepository.save(any(Cart.class))).thenAnswer(i -> i.getArguments()[0]);
 
         CartDto request = new CartDto();
-        request.setUserId(userId);
-        request.setProductId(productId1);
+        request.setUserId(this.userId);
+        request.setProductId("ca1c1b7d-f5aa-4573-aeff-d01665cc88c8");
 
         Cart savedCart = cartService.deleteItemFromCart(request);
 
-        assertEquals(1, savedCart.getItems().size());
-        verify(cartRepository, times(1)).findByUserId(userId);
-        verify(cartRepository, times(1)).save(cart);
+        assertTrue(savedCart.getItems().isEmpty());
+        assertEquals(0, savedCart.getTotalPrice());
+        verify(cartRepository, times(1)).findByUserId(this.userId);
+        verify(cartRepository, times(1)).save(this.cart);
     }
 
     @Test
     void testClearShoppingCart() {
-        Long userId = 1L;
-        String productId = "ca1c1b7d-f5aa-4573-aeff-d01665cc88c8";
-        String name = "Meja";
-        double price = 25000;
-        int quantity = 1;
-        Cart cart = new Cart(userId);
-        CartItem cartItem = new CartItem(productId, name, price, quantity);
-        cart.getItems().add(cartItem);
+        this.cart.setTotalPrice(25000);
 
-        when(cartRepository.findByUserId(userId)).thenReturn(Optional.of(cart));
+        when(cartRepository.findByUserId(this.userId)).thenReturn(Optional.of(this.cart));
         when(cartRepository.save(any(Cart.class))).thenAnswer(i -> i.getArguments()[0]);
 
-        Cart savedCart = cartService.clearCart(userId);
+        Cart savedCart = cartService.clearCart(this.userId);
 
         assertTrue(savedCart.getItems().isEmpty());
-        verify(cartRepository, times(1)).findByUserId(userId);
-        verify(cartRepository, times(1)).save(cart);
+        assertEquals(0, savedCart.getTotalPrice());
+        verify(cartRepository, times(1)).findByUserId(this.userId);
+        verify(cartRepository, times(1)).save(this.cart);
     }
 
     @Test
     void testTopUpWallet() {
-        Long userId = 1L;
-        double amount = 10000;
-        Cart cart = new Cart(userId);
-
         TopUpDto request = new TopUpDto();
-        request.setUserId(userId);
-        request.setAmount(amount);
+        request.setUserId(this.userId);
+        request.setAmount(10000);
 
-        when(cartRepository.findByUserId(userId)).thenReturn(Optional.of(cart));
+        when(cartRepository.findByUserId(this.userId)).thenReturn(Optional.of(this.cart));
         when(cartRepository.save(any(Cart.class))).thenAnswer(i -> i.getArguments()[0]);
 
         Cart savedCart = cartService.topUpWallet(request);
 
         assertEquals(10000, savedCart.getWallet());
-        verify(cartRepository, times(1)).findByUserId(userId);
-        verify(cartRepository, times(1)).save(cart);
+        verify(cartRepository, times(1)).findByUserId(this.userId);
+        verify(cartRepository, times(1)).save(this.cart);
     }
 }
