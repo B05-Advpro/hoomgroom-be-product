@@ -3,7 +3,6 @@ package id.ac.ui.cs.advprog.hoomgroomproduct.service;
 import id.ac.ui.cs.advprog.hoomgroomproduct.dto.TransactionRequestDto;
 import id.ac.ui.cs.advprog.hoomgroomproduct.model.*;
 import id.ac.ui.cs.advprog.hoomgroomproduct.repository.TransactionRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;

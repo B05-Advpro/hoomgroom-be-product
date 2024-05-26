@@ -5,7 +5,6 @@ import id.ac.ui.cs.advprog.hoomgroomproduct.dto.TopUpDto;
 import id.ac.ui.cs.advprog.hoomgroomproduct.model.Cart;
 import id.ac.ui.cs.advprog.hoomgroomproduct.model.CartItem;
 import id.ac.ui.cs.advprog.hoomgroomproduct.repository.CartRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Iterator;
