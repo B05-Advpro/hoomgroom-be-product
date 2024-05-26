@@ -22,17 +22,17 @@ public class Transaction {
     private LocalDateTime createdAt;
     private double totalPrice;
     private String promoCodeUsed;
-    private Long userId;
+    private String username;
     private String deliveryStatus;
     private String deliveryCode;
     private String deliveryMethod;
 
-    public Transaction(List<TransactionItem> items, double totalPrice, String promoCodeUsed, Long userId, String deliveryMethod) {
+    public Transaction(List<TransactionItem> items, double totalPrice, String promoCodeUsed, String username, String deliveryMethod) {
         this.items = items;
         this.createdAt = LocalDateTime.now();
         this.totalPrice = totalPrice;
         this.promoCodeUsed = promoCodeUsed;
-        this.userId = userId;
+        this.username = username;
         this.deliveryStatus = DeliveryStatus.MENUNGGU_VERIFIKASI.getValue();
         this.deliveryCode = "";
         this.setDeliveryMethod(deliveryMethod);

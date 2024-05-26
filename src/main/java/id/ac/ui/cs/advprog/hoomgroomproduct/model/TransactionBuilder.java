@@ -6,7 +6,7 @@ public class TransactionBuilder {
     private List<TransactionItem> items;
     private double totalPrice;
     private String promoCodeUsed;
-    private Long userId;
+    private String username;
     private String deliveryMethod;
 
     public TransactionBuilder setItems(List<TransactionItem> items) {
@@ -24,8 +24,8 @@ public class TransactionBuilder {
         return this;
     }
 
-    public TransactionBuilder setUserId(Long userId) {
-        this.userId = userId;
+    public TransactionBuilder setUsername(String username) {
+        this.username = username;
         return this;
     }
 
@@ -35,6 +35,6 @@ public class TransactionBuilder {
     }
 
     public Transaction build() {
-        return new Transaction(items, totalPrice, promoCodeUsed, userId, deliveryMethod);
+        return new Transaction(items, totalPrice, promoCodeUsed, username, deliveryMethod);
     }
 }

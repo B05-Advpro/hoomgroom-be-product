@@ -39,14 +39,14 @@ public class TransactionController {
         return ResponseEntity.ok(transactions);
     }
 
-    @GetMapping("/get/{userId}")
-    public ResponseEntity<List<Transaction>> getTransactionByUserId(@RequestHeader(value = "Authorization") String token,
-                                                                    @PathVariable Long userId) {
+    @GetMapping("/get/{username}")
+    public ResponseEntity<List<Transaction>> getTransactionByusername(@RequestHeader(value = "Authorization") String token,
+                                                                    @PathVariable String username) {
         token = token.substring(7);
         if (!jwtService.isTokenValid(token) || !jwtService.extractRole(token).equals("USER")) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
         }
-        List<Transaction> transactions = transactionService.getTransactionByUserId(userId);
+        List<Transaction> transactions = transactionService.getTransactionByUsername(username);
         return ResponseEntity.ok(transactions);
     }
 

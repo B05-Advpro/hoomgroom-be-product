@@ -21,13 +21,13 @@ public class CartController {
     @Autowired
     JwtService jwtService;
 
-    @GetMapping("/get/{userId}")
-    public ResponseEntity<Cart> getCart(@RequestHeader(value = "Authorization") String token, @PathVariable Long userId) {
+    @GetMapping("/get/{username}")
+    public ResponseEntity<Cart> getCart(@RequestHeader(value = "Authorization") String token, @PathVariable String username) {
         token = token.substring(7);
         if (!jwtService.isTokenValid(token) || !jwtService.extractRole(token).equals("USER")) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
         }
-        Cart cart = cartService.getCart(userId);
+        Cart cart = cartService.getCart(username);
         return ResponseEntity.ok(cart);
     }
 
@@ -51,13 +51,13 @@ public class CartController {
         return ResponseEntity.ok("Items deleted from cart succesfully");
     }
 
-    @PostMapping("/clear-cart/{userId}")
-    public ResponseEntity<String> clearCart(@RequestHeader(value = "Authorization") String token, @PathVariable Long userId) {
+    @PostMapping("/clear-cart/{username}")
+    public ResponseEntity<String> clearCart(@RequestHeader(value = "Authorization") String token, @PathVariable String username) {
         token = token.substring(7);
         if (!jwtService.isTokenValid(token) || !jwtService.extractRole(token).equals("USER")) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
         }
-        cartService.clearCart(userId);
+        cartService.clearCart(username);
         return ResponseEntity.ok("Cart cleared successfully");
     }
 

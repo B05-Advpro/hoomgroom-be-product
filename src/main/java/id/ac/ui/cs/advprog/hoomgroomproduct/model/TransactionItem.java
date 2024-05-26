@@ -21,7 +21,7 @@ public class TransactionItem {
     @Setter
     @JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "username")
     private Transaction transaction;
 
     public TransactionItem(String productId, String name, double price, int quantity) {

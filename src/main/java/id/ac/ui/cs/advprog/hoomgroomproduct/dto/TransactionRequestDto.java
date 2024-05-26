@@ -9,7 +9,7 @@ import java.util.Map;
 @Getter
 @Setter
 public class TransactionRequestDto {
-    private Long userId;
+    private String username;
     private String promoCodeUsed;
     private String deliveryMethod;
 }

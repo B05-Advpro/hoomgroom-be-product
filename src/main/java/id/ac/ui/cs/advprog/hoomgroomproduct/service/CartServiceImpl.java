@@ -16,22 +16,22 @@ public class CartServiceImpl implements CartService {
     @Autowired
     private CartRepository cartRepository;
 
-    public Cart getCart(Long userId) {
-        return cartRepository.findByUserId(userId)
+    public Cart getCart(String username) {
+        return cartRepository.findByUsername(username)
                 .orElseGet(() -> {
-                    Cart cart = new Cart(userId);
+                    Cart cart = new Cart(username);
                     return cartRepository.save(cart);
                 });
     }
 
     public Cart addItemToCart(CartDto request) {
-        Long userId = request.getUserId();
+        String username = request.getUsername();
         String productId = request.getProductId();
         String name = request.getName();
         double price = request.getPrice();
         int quantity = request.getQuantity();
 
-        Cart cart = getCart(userId);
+        Cart cart = getCart(username);
         List<CartItem> cartItems = cart.getItems();
         CartItem savedItem = null;
         for(CartItem item : cartItems) {
@@ -54,10 +54,10 @@ public class CartServiceImpl implements CartService {
     }
 
     public Cart deleteItemFromCart(CartDto request) {
-        Long userId = request.getUserId();
+        String username = request.getUsername();
         String productId = request.getProductId();
 
-        Cart cart = getCart(userId);
+        Cart cart = getCart(username);
         Iterator<CartItem> iterator = cart.getItems().iterator();
         while(iterator.hasNext()) {
             CartItem item = iterator.next();
@@ -69,17 +69,18 @@ public class CartServiceImpl implements CartService {
         return cartRepository.save(cart);
     }
 
-    public Cart clearCart(Long userId) {
-        Cart cart = getCart(userId);
+
+    public Cart clearCart(String username) {
+        Cart cart = getCart(username);
         cart.getItems().clear();
         cart.setTotalPrice(0);
         return cartRepository.save(cart);
     }
 
     public Cart topUpWallet(TopUpDto request) {
-        Long userId = request.getUserId();
+        String username = request.getUsername();
         double amount = request.getAmount();
-        Cart cart = getCart(userId);
+        Cart cart = getCart(username);
         cart.setWallet(cart.getWallet() + amount);
         return cartRepository.save(cart);
     }

@@ -6,6 +6,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class TopUpDto {
-    private Long userId;
+    private String username;
     private double amount;
 }

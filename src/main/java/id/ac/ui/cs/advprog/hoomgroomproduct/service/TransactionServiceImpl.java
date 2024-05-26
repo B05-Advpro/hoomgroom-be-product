@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -27,11 +26,11 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public Transaction create(TransactionRequestDto request, String token) {
-        Long userId = request.getUserId();
+        String username = request.getUsername();
         String promoCodeUsed = request.getPromoCodeUsed();
         String deliverMethod = request.getDeliveryMethod();
 
-        Cart cart = cartService.getCart(userId);
+        Cart cart = cartService.getCart(username);
         if (cart.getItems().isEmpty()) {
             throw new IllegalStateException("Cart is empty");
         }
@@ -59,7 +58,7 @@ public class TransactionServiceImpl implements TransactionService {
         }
 
         Transaction transaction = new TransactionBuilder()
-                .setUserId(userId)
+                .setUsername(username)
                 .setItems(transactionItems)
                 .setTotalPrice(totalPrice)
                 .setDeliveryMethod(deliverMethod)
@@ -68,7 +67,7 @@ public class TransactionServiceImpl implements TransactionService {
 
         transactionItems.forEach(item -> item.setTransaction(transaction));
         transactionRepository.save(transaction);
-        cartService.clearCart(userId);
+        cartService.clearCart(username);
         updateSales(transactionItems, token);
         return transaction;
     }
@@ -97,7 +96,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public List<Transaction> getTransactionByUserId(Long userId) {
-        return transactionRepository.findByUserId(userId);
+    public List<Transaction> getTransactionByUsername(String username) {
+        return transactionRepository.findByUsername(username);
     }
 }
