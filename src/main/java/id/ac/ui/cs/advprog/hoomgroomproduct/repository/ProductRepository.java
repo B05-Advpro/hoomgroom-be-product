@@ -1,9 +1,6 @@
 package id.ac.ui.cs.advprog.hoomgroomproduct.repository;
 
 
-import id.ac.ui.cs.advprog.hoomgroomproduct.model.Product;
-
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
