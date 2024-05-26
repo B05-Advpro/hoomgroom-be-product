@@ -5,8 +5,10 @@ import id.ac.ui.cs.advprog.hoomgroomproduct.enums.DeliveryStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -17,25 +19,31 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
+    @Setter
     @OneToMany(mappedBy = "transaction", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TransactionItem> items;
-    private LocalDateTime createdAt;
+
+    @Setter
     private double totalPrice;
+    private LocalDateTime createdAt;
     private String promoCodeUsed;
-    private Long userId;
+    private String username;
     private String deliveryStatus;
     private String deliveryCode;
     private String deliveryMethod;
 
-    public Transaction(List<TransactionItem> items, double totalPrice, String promoCodeUsed, Long userId, String deliveryMethod) {
+    public Transaction(String username, String promoCodeUsed, String deliveryMethod, List<TransactionItem> items, double totalPrice) {
         this.items = items;
         this.createdAt = LocalDateTime.now();
         this.totalPrice = totalPrice;
+        this.username = username;
         this.promoCodeUsed = promoCodeUsed;
-        this.userId = userId;
         this.deliveryStatus = DeliveryStatus.MENUNGGU_VERIFIKASI.getValue();
         this.deliveryCode = "";
         this.setDeliveryMethod(deliveryMethod);
+    }
+    public Transaction(String username, String promoCodeUsed, String deliveryMethod) {
+        this(username, promoCodeUsed, deliveryMethod, new ArrayList<>(), 0);
     }
 
     public void setDeliveryStatus(String status) {

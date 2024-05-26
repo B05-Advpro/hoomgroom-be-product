@@ -3,11 +3,9 @@ package id.ac.ui.cs.advprog.hoomgroomproduct.service;
 import id.ac.ui.cs.advprog.hoomgroomproduct.dto.TransactionRequestDto;
 import id.ac.ui.cs.advprog.hoomgroomproduct.model.*;
 import id.ac.ui.cs.advprog.hoomgroomproduct.repository.TransactionRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -16,25 +14,28 @@ import java.util.*;
 @Service
 public class TransactionServiceImpl implements TransactionService {
 
-    @Autowired
-    private TransactionRepository transactionRepository;
+    private final TransactionRepository transactionRepository;
+    private final CartService cartService;
+    private final RestTemplate restTemplate;
 
-    @Autowired
-    private CartService cartService;
-
-    @Autowired
-    private RestTemplate restTemplate;
+    public TransactionServiceImpl(TransactionRepository transactionRepository, CartService cartService, RestTemplate restTemplate) {
+        this.transactionRepository = transactionRepository;
+        this.cartService = cartService;
+        this.restTemplate = restTemplate;
+    }
 
     @Override
     public Transaction create(TransactionRequestDto request, String token) {
-        Long userId = request.getUserId();
+        String username = request.getUsername();
         String promoCodeUsed = request.getPromoCodeUsed();
         String deliverMethod = request.getDeliveryMethod();
 
-        Cart cart = cartService.getCart(userId);
+        Cart cart = cartService.getCart(username);
         if (cart.getItems().isEmpty()) {
             throw new IllegalStateException("Cart is empty");
         }
+
+        Transaction transaction = new Transaction(username, promoCodeUsed, deliverMethod);
 
         List<CartItem> items = cart.getItems();
         List<TransactionItem> transactionItems = new ArrayList<>();
@@ -42,14 +43,17 @@ public class TransactionServiceImpl implements TransactionService {
         for (CartItem item : items) {
             TransactionItem transactionItem = new TransactionItem(item.getProductId(), item.getName(),
                     item.getPrice(), item.getQuantity());
+            transactionItem.setTransaction(transaction);
             transactionItems.add(transactionItem);
         }
+        transaction.setItems(transactionItems);
 
         double totalPrice = cart.getTotalPrice();
         if (promoCodeUsed != null && !promoCodeUsed.isEmpty()){
             double promoValue = Double.parseDouble(promoCodeUsed.substring(promoCodeUsed.length() - 2));
             totalPrice = totalPrice - (totalPrice * (promoValue/100));
         }
+        transaction.setTotalPrice(totalPrice);
 
         double wallet = cart.getWallet();
         if (wallet < totalPrice) {
@@ -58,17 +62,8 @@ public class TransactionServiceImpl implements TransactionService {
             cart.setWallet(wallet - totalPrice);
         }
 
-        Transaction transaction = new TransactionBuilder()
-                .setUserId(userId)
-                .setItems(transactionItems)
-                .setTotalPrice(totalPrice)
-                .setDeliveryMethod(deliverMethod)
-                .setPromoCodeUsed(promoCodeUsed)
-                .build();
-
-        transactionItems.forEach(item -> item.setTransaction(transaction));
         transactionRepository.save(transaction);
-        cartService.clearCart(userId);
+        cartService.clearCart(username);
         updateSales(transactionItems, token);
         return transaction;
     }
@@ -97,7 +92,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public List<Transaction> getTransactionByUserId(Long userId) {
-        return transactionRepository.findByUserId(userId);
+    public List<Transaction> getTransactionByUsername(String username) {
+        return transactionRepository.findByUsername(username);
     }
 }

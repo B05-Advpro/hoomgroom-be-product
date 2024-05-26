@@ -16,7 +16,7 @@ class CartTest {
     void setUp() {
         CartItem cartItem = new CartItem("ca1c1b7d-f5aa-4573-aeff-d01665cc88c8",
                 "Meja", 25000, 1);
-        this.cart = new Cart(1L);
+        this.cart = new Cart("dummy");
         this.cart.getItems().add(cartItem);
         this.cart.setTotalPrice(25000);
         this.cartItems = new ArrayList<>();
@@ -24,8 +24,8 @@ class CartTest {
     }
 
     @Test
-    void getUserId() {
-        assertEquals(1L, cart.getUserId());
+    void getusername() {
+        assertEquals("dummy", cart.getUsername());
     }
 
     @Test

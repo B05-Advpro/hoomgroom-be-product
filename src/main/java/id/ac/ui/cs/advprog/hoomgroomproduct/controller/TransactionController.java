@@ -4,7 +4,6 @@ import id.ac.ui.cs.advprog.hoomgroomproduct.dto.TransactionRequestDto;
 import id.ac.ui.cs.advprog.hoomgroomproduct.model.Transaction;
 import id.ac.ui.cs.advprog.hoomgroomproduct.service.JwtService;
 import id.ac.ui.cs.advprog.hoomgroomproduct.service.TransactionService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,11 +15,13 @@ import java.util.List;
 @RequestMapping("/transaction")
 public class TransactionController {
 
-    @Autowired
-    private TransactionService transactionService;
+    private final TransactionService transactionService;
+    private final JwtService jwtService;
 
-    @Autowired
-    private JwtService jwtService;
+    public TransactionController(TransactionService transactionService, JwtService jwtService) {
+        this.transactionService = transactionService;
+        this.jwtService = jwtService;
+    }
 
     @PostMapping("/create")
     public ResponseEntity<Transaction> createTransaction(@RequestHeader(value = "Authorization") String token,
@@ -39,14 +40,15 @@ public class TransactionController {
         return ResponseEntity.ok(transactions);
     }
 
-    @GetMapping("/get/{userId}")
-    public ResponseEntity<List<Transaction>> getTransactionByUserId(@RequestHeader(value = "Authorization") String token,
-                                                                    @PathVariable Long userId) {
+    @GetMapping("/get/{username}")
+    public ResponseEntity<List<Transaction>> getTransactionByusername(@RequestHeader(value = "Authorization") String token,
+                                                                    @PathVariable String username) {
         token = token.substring(7);
         if (!jwtService.isTokenValid(token) || !jwtService.extractRole(token).equals("USER")) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
         }
-        List<Transaction> transactions = transactionService.getTransactionByUserId(userId);
+
+        List<Transaction> transactions = transactionService.getTransactionByUsername(username);
         return ResponseEntity.ok(transactions);
     }
 

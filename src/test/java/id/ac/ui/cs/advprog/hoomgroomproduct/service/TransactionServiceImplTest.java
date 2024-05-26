@@ -34,27 +34,27 @@ class TransactionServiceImplTest {
     @InjectMocks
     TransactionServiceImpl transactionService;
 
-    Long userId;
+    String username;
     Cart cart;
     TransactionRequestDto request;
     String token;
 
     @BeforeEach
     void setUp() {
-        this.userId = 1L;
+        this.username = "dummy";
         String productId = "ca1c1b7d-f5aa-4573-aeff-d01665cc88c8";
         String name = "Meja";
         double price = 25000;
         int quantity = 2;
         CartItem cartItem = new CartItem(productId, name, price, quantity);
 
-        this.cart = new Cart(this.userId);
+        this.cart = new Cart(this.username);
         this.cart.setWallet(50000);
         this.cart.setTotalPrice(50000);
         this.cart.getItems().add(cartItem);
 
         this.request = new TransactionRequestDto();
-        request.setUserId(1L);
+        request.setUsername(this.username);
         request.setPromoCodeUsed("BELANJAHEMAT20");
         request.setDeliveryMethod("MOTOR");
 
@@ -63,7 +63,7 @@ class TransactionServiceImplTest {
 
     @Test
     void testUpdateSales() {
-        List<TransactionItem> transactionItems = Arrays.asList(
+        List<TransactionItem> transactionItems = List.of(
                 new TransactionItem("ca1c1b7d-f5aa-4573-aeff-d01665cc88c8", "Meja",
                         25000, 2)
         );
@@ -78,14 +78,14 @@ class TransactionServiceImplTest {
 
         HttpEntity<Map<String, Integer>> requestEntity = new HttpEntity<>(expectedSales, headers);
 
-        verify(restTemplate).exchange(eq("https://api.b5-hoomgroom.com/admin/product/sold"), eq(HttpMethod.POST), eq(requestEntity), eq(Void.class));
+        verify(restTemplate).exchange("https://api.b5-hoomgroom.com/admin/product/sold", HttpMethod.POST, requestEntity, Void.class);
     }
 
     @Test
     void testCreateTransactionEmptyCart() {
         this.cart.getItems().clear();
 
-        when(cartService.getCart(this.userId)).thenReturn(cart);
+        when(cartService.getCart(this.username)).thenReturn(cart);
 
         Exception e = assertThrows(IllegalStateException.class, () -> {
             transactionService.create(this.request, this.token);
@@ -93,7 +93,7 @@ class TransactionServiceImplTest {
 
         assertEquals("Cart is empty", e.getMessage());
 
-        verify(cartService, times(1)).getCart(this.userId);
+        verify(cartService, times(1)).getCart(this.username);
         verify(transactionRepository, times(0)).save(any(Transaction.class));
         verify(restTemplate, times(0)).postForEntity(anyString(), anyMap(), eq(Void.class));
     }
@@ -102,24 +102,24 @@ class TransactionServiceImplTest {
     void testCreateTransactionNotEnoughBalance() {
         this.cart.setWallet(0);
 
-        when(cartService.getCart(this.userId)).thenReturn(cart);
+        when(cartService.getCart(this.username)).thenReturn(cart);
 
         Exception e = assertThrows(IllegalStateException.class, () -> {
-            Transaction transaction = transactionService.create(this.request, this.token);
+            transactionService.create(this.request, this.token);
         });
 
         assertEquals("Not enough balance in wallet", e.getMessage());
-        verify(cartService, times(1)).getCart(this.userId);
+        verify(cartService, times(1)).getCart(this.username);
         verify(transactionRepository, times(0)).save(any(Transaction.class));
         verify(restTemplate, times(0)).postForEntity(anyString(), anyMap(), eq(Void.class));
     }
     @Test
     void testCreateTransactionSuccess() {
-        when(cartService.getCart(this.userId)).thenReturn(cart);
+        when(cartService.getCart(this.username)).thenReturn(cart);
 
         Transaction transaction = transactionService.create(this.request, this.token);
         assertNotNull(transaction);
-        assertEquals(this.userId, transaction.getUserId());
+        assertEquals(this.username, transaction.getUsername());
         assertEquals(40000, transaction.getTotalPrice());
         verify(transactionRepository, times(1)).save(any(Transaction.class));
 
@@ -131,18 +131,18 @@ class TransactionServiceImplTest {
 
         HttpEntity<Map<String, Integer>> requestEntity = new HttpEntity<>(expectedSales, headers);
 
-        verify(restTemplate).exchange(eq("https://api.b5-hoomgroom.com/admin/product/sold"), eq(HttpMethod.POST), eq(requestEntity), eq(Void.class));
+        verify(restTemplate).exchange("https://api.b5-hoomgroom.com/admin/product/sold", HttpMethod.POST, requestEntity, Void.class);
     }
 
     @Test
     void testCreateTransactionSuccessNoPromoCode() {
         this.request.setPromoCodeUsed("");
 
-        when(cartService.getCart(this.userId)).thenReturn(cart);
+        when(cartService.getCart(this.username)).thenReturn(cart);
 
         Transaction transaction = transactionService.create(this.request, this.token);
         assertNotNull(transaction);
-        assertEquals(this.userId, transaction.getUserId());
+        assertEquals(this.username, transaction.getUsername());
         assertEquals(50000, transaction.getTotalPrice());
         verify(transactionRepository, times(1)).save(any(Transaction.class));
 
@@ -154,13 +154,13 @@ class TransactionServiceImplTest {
 
         HttpEntity<Map<String, Integer>> requestEntity = new HttpEntity<>(expectedSales, headers);
 
-        verify(restTemplate).exchange(eq("https://api.b5-hoomgroom.com/admin/product/sold"), eq(HttpMethod.POST), eq(requestEntity), eq(Void.class));
+        verify(restTemplate).exchange("https://api.b5-hoomgroom.com/admin/product/sold", HttpMethod.POST, requestEntity, Void.class);
     }
 
     @Test
     void testGetAll() {
-        Transaction transaction1 = new TransactionBuilder().setUserId(1L).setDeliveryMethod("MOTOR").build();
-        Transaction transaction2 = new TransactionBuilder().setUserId(2L).setDeliveryMethod("MOTOR").build();
+        Transaction transaction1 = new Transaction("dummy1", "BELANJAHEMAT20", "MOTOR");
+        Transaction transaction2 = new Transaction("dummy2", "BELANJAHEMAT20", "MOTOR");
         List<Transaction> transactions = new ArrayList<>();
         transactions.add(transaction1);
         transactions.add(transaction2);
@@ -170,24 +170,24 @@ class TransactionServiceImplTest {
         List<Transaction> savedTransactions = transactionService.getAll();
         assertEquals(transactions, savedTransactions);
         for (int i = 0; i < transactions.size(); i++) {
-            assertEquals(transactions.get(i).getUserId(), savedTransactions.get(i).getUserId());
+            assertEquals(transactions.get(i).getUsername(), savedTransactions.get(i).getUsername());
         }
     }
 
     @Test
-    void testGetTransactionByUserId() {
-        Transaction transaction1 = new TransactionBuilder().setUserId(1L).setDeliveryMethod("MOTOR").build();
-        Transaction transaction2 = new TransactionBuilder().setUserId(1L).setDeliveryMethod("MOTOR").build();
+    void testGetTransactionByUsername() {
+        Transaction transaction1 = new Transaction("dummy1", "BELANJAHEMAT20", "MOTOR");
+        Transaction transaction2 = new Transaction("dummy1", "BELANJAHEMAT20", "MOTOR");
         List<Transaction> transactions = new ArrayList<>();
         transactions.add(transaction1);
         transactions.add(transaction2);
 
-        when(transactionRepository.findByUserId(1L)).thenReturn(transactions);
+        when(transactionRepository.findByUsername("dummy")).thenReturn(transactions);
 
-        List<Transaction> savedTransactions = transactionService.getTransactionByUserId(1L);
+        List<Transaction> savedTransactions = transactionService.getTransactionByUsername("dummy");
         assertEquals(transactions, savedTransactions);
         for (int i = 0; i < transactions.size(); i++) {
-            assertEquals(transactions.get(i).getUserId(), savedTransactions.get(i).getUserId());
+            assertEquals(transactions.get(i).getUsername(), savedTransactions.get(i).getUsername());
         }
     }
 }
