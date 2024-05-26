@@ -15,14 +15,15 @@ import java.util.*;
 @Service
 public class TransactionServiceImpl implements TransactionService {
 
-    @Autowired
-    private TransactionRepository transactionRepository;
+    private final TransactionRepository transactionRepository;
+    private final CartService cartService;
+    private final RestTemplate restTemplate;
 
-    @Autowired
-    private CartService cartService;
-
-    @Autowired
-    private RestTemplate restTemplate;
+    public TransactionServiceImpl(TransactionRepository transactionRepository, CartService cartService, RestTemplate restTemplate) {
+        this.transactionRepository = transactionRepository;
+        this.cartService = cartService;
+        this.restTemplate = restTemplate;
+    }
 
     @Override
     public Transaction create(TransactionRequestDto request, String token) {
@@ -35,20 +36,25 @@ public class TransactionServiceImpl implements TransactionService {
             throw new IllegalStateException("Cart is empty");
         }
 
+        Transaction transaction = new Transaction(username, promoCodeUsed, deliverMethod);
+
         List<CartItem> items = cart.getItems();
         List<TransactionItem> transactionItems = new ArrayList<>();
 
         for (CartItem item : items) {
             TransactionItem transactionItem = new TransactionItem(item.getProductId(), item.getName(),
                     item.getPrice(), item.getQuantity());
+            transactionItem.setTransaction(transaction);
             transactionItems.add(transactionItem);
         }
+        transaction.setItems(transactionItems);
 
         double totalPrice = cart.getTotalPrice();
         if (promoCodeUsed != null && !promoCodeUsed.isEmpty()){
             double promoValue = Double.parseDouble(promoCodeUsed.substring(promoCodeUsed.length() - 2));
             totalPrice = totalPrice - (totalPrice * (promoValue/100));
         }
+        transaction.setTotalPrice(totalPrice);
 
         double wallet = cart.getWallet();
         if (wallet < totalPrice) {
@@ -57,15 +63,6 @@ public class TransactionServiceImpl implements TransactionService {
             cart.setWallet(wallet - totalPrice);
         }
 
-        Transaction transaction = new TransactionBuilder()
-                .setUsername(username)
-                .setItems(transactionItems)
-                .setTotalPrice(totalPrice)
-                .setDeliveryMethod(deliverMethod)
-                .setPromoCodeUsed(promoCodeUsed)
-                .build();
-
-        transactionItems.forEach(item -> item.setTransaction(transaction));
         transactionRepository.save(transaction);
         cartService.clearCart(username);
         updateSales(transactionItems, token);

@@ -23,13 +23,8 @@ class TransactionTest {
         this.items.add(product1);
         this.items.add(product2);
 
-        this.transaction = new TransactionBuilder()
-                .setItems(this.items)
-                .setTotalPrice(130000)
-                .setPromoCodeUsed("BELANJAHEMAT20")
-                .setUsername("dummy")
-                .setDeliveryMethod("MOTOR")
-                .build();
+        this.transaction = new Transaction("dummy", "BELANJAHEMAT20", "MOTOR",
+                this.items, 130000);
     }
 
     @Test
@@ -83,14 +78,7 @@ class TransactionTest {
 
     @Test
     void testInvalidDeliveryMethod() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            this.transaction = new TransactionBuilder()
-                    .setItems(this.items)
-                    .setTotalPrice(130000)
-                    .setPromoCodeUsed("BELANJAHEMAT20")
-                    .setUsername("dummy")
-                    .setDeliveryMethod("BECAK")
-                    .build();
-        });
+        assertThrows(IllegalArgumentException.class, () -> new Transaction("dummy",
+                "BELANJAHEMAT20", "BECAK", this.items, 130000));
     }
 }

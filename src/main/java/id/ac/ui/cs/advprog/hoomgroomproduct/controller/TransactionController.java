@@ -16,11 +16,13 @@ import java.util.List;
 @RequestMapping("/transaction")
 public class TransactionController {
 
-    @Autowired
-    private TransactionService transactionService;
+    private final TransactionService transactionService;
+    private final JwtService jwtService;
 
-    @Autowired
-    private JwtService jwtService;
+    public TransactionController(TransactionService transactionService, JwtService jwtService) {
+        this.transactionService = transactionService;
+        this.jwtService = jwtService;
+    }
 
     @PostMapping("/create")
     public ResponseEntity<Transaction> createTransaction(@RequestHeader(value = "Authorization") String token,

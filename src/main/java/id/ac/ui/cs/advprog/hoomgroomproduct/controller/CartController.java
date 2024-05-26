@@ -15,11 +15,13 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/cart")
 public class CartController {
 
-    @Autowired
-    CartService cartService;
+    private final CartService cartService;
+    private final JwtService jwtService;
 
-    @Autowired
-    JwtService jwtService;
+    public CartController(CartService cartService, JwtService jwtService) {
+        this.cartService = cartService;
+        this.jwtService = jwtService;
+    }
 
     @GetMapping("/get/{username}")
     public ResponseEntity<Cart> getCart(@RequestHeader(value = "Authorization") String token, @PathVariable String username) {

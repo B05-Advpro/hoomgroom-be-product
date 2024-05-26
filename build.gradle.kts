@@ -33,20 +33,28 @@ repositories {
 	mavenCentral()
 }
 
+val jsonWebTokenJacksonVersion = "0.11.5"
+val jsonWebTokenImplVersion = "0.11.5"
+val jsonWebTokenApiVersion = "0.11.5"
+
 dependencies {
-	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-	implementation("org.springframework.boot:spring-boot-starter-web")
+	annotationProcessor("org.projectlombok:lombok")
+	annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+
 	compileOnly("org.projectlombok:lombok")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
-	runtimeOnly("org.postgresql:postgresql")
-	annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
-	annotationProcessor("org.projectlombok:lombok")
-	testImplementation("org.springframework.boot:spring-boot-starter-test")
+
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
+	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+	implementation("org.springframework.boot:spring-boot-starter-web")
+	implementation("io.jsonwebtoken:jjwt-api:$jsonWebTokenApiVersion")
+	implementation("io.jsonwebtoken:jjwt-impl:$jsonWebTokenImplVersion")
+	implementation("io.jsonwebtoken:jjwt-jackson:$jsonWebTokenJacksonVersion")
+
+	runtimeOnly("org.postgresql:postgresql")
 	runtimeOnly("io.micrometer:micrometer-registry-prometheus")
-	implementation("io.jsonwebtoken:jjwt-api:0.11.5")
-	implementation("io.jsonwebtoken:jjwt-impl:0.11.5")
-	implementation("io.jsonwebtoken:jjwt-jackson:0.11.5")
+
+	testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
 tasks.withType<Test> {
@@ -60,8 +68,8 @@ tasks.jacocoTestReport {
 	}))
 	dependsOn(tasks.test) // tests are required to run before generating the report
 	reports {
-		xml.required.set(false)
-		csv.required.set(false)
+		xml.required.set(true)
+		csv.required.set(true)
 		html.outputLocation.set(layout.buildDirectory.dir("jacocoHtml"))
 	}
 }

@@ -55,10 +55,10 @@ class CartServiceImplTest {
         when(cartRepository.findByUsername(this.username)).thenReturn(Optional.empty());
         when(cartRepository.save(any(Cart.class))).thenAnswer(i -> i.getArguments()[0]);
 
-        Cart cart = cartService.getCart(this.username);
+        Cart savedCart = cartService.getCart(this.username);
 
-        assertNotNull(cart);
-        assertEquals(this.username, cart.getUsername());
+        assertNotNull(savedCart);
+        assertEquals(this.username, savedCart.getUsername());
         verify(cartRepository, times(1)).findByUsername(this.username);
         verify(cartRepository, times(1)).save(any(Cart.class));
     }
@@ -67,10 +67,10 @@ class CartServiceImplTest {
     void testGetExistingCart() {
         when(cartRepository.findByUsername(this.username)).thenReturn(Optional.of(this.cart));
 
-        Cart cart = cartService.getCart(this.username);
+        Cart savedCart = cartService.getCart(this.username);
 
-        assertNotNull(cart);
-        assertEquals(this.username, cart.getUsername());
+        assertNotNull(savedCart);
+        assertEquals(this.username, savedCart.getUsername());
         verify(cartRepository, times(1)).findByUsername(this.username);
         verify(cartRepository, times(0)).save(any(Cart.class));
     }

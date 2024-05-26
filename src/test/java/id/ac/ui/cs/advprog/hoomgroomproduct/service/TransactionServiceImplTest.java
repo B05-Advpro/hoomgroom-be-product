@@ -63,7 +63,7 @@ class TransactionServiceImplTest {
 
     @Test
     void testUpdateSales() {
-        List<TransactionItem> transactionItems = Arrays.asList(
+        List<TransactionItem> transactionItems = List.of(
                 new TransactionItem("ca1c1b7d-f5aa-4573-aeff-d01665cc88c8", "Meja",
                         25000, 2)
         );
@@ -78,7 +78,7 @@ class TransactionServiceImplTest {
 
         HttpEntity<Map<String, Integer>> requestEntity = new HttpEntity<>(expectedSales, headers);
 
-        verify(restTemplate).exchange(eq("https://api.b5-hoomgroom.com/admin/product/sold"), eq(HttpMethod.POST), eq(requestEntity), eq(Void.class));
+        verify(restTemplate).exchange("https://api.b5-hoomgroom.com/admin/product/sold", HttpMethod.POST, requestEntity, Void.class);
     }
 
     @Test
@@ -105,7 +105,7 @@ class TransactionServiceImplTest {
         when(cartService.getCart(this.username)).thenReturn(cart);
 
         Exception e = assertThrows(IllegalStateException.class, () -> {
-            Transaction transaction = transactionService.create(this.request, this.token);
+            transactionService.create(this.request, this.token);
         });
 
         assertEquals("Not enough balance in wallet", e.getMessage());
@@ -131,7 +131,7 @@ class TransactionServiceImplTest {
 
         HttpEntity<Map<String, Integer>> requestEntity = new HttpEntity<>(expectedSales, headers);
 
-        verify(restTemplate).exchange(eq("https://api.b5-hoomgroom.com/admin/product/sold"), eq(HttpMethod.POST), eq(requestEntity), eq(Void.class));
+        verify(restTemplate).exchange("https://api.b5-hoomgroom.com/admin/product/sold", HttpMethod.POST, requestEntity, Void.class);
     }
 
     @Test
@@ -154,13 +154,13 @@ class TransactionServiceImplTest {
 
         HttpEntity<Map<String, Integer>> requestEntity = new HttpEntity<>(expectedSales, headers);
 
-        verify(restTemplate).exchange(eq("https://api.b5-hoomgroom.com/admin/product/sold"), eq(HttpMethod.POST), eq(requestEntity), eq(Void.class));
+        verify(restTemplate).exchange("https://api.b5-hoomgroom.com/admin/product/sold", HttpMethod.POST, requestEntity, Void.class);
     }
 
     @Test
     void testGetAll() {
-        Transaction transaction1 = new TransactionBuilder().setUsername("dummy1").setDeliveryMethod("MOTOR").build();
-        Transaction transaction2 = new TransactionBuilder().setUsername("dummy2").setDeliveryMethod("MOTOR").build();
+        Transaction transaction1 = new Transaction("dummy1", "BELANJAHEMAT20", "MOTOR");
+        Transaction transaction2 = new Transaction("dummy2", "BELANJAHEMAT20", "MOTOR");
         List<Transaction> transactions = new ArrayList<>();
         transactions.add(transaction1);
         transactions.add(transaction2);
@@ -176,8 +176,8 @@ class TransactionServiceImplTest {
 
     @Test
     void testGetTransactionByUsername() {
-        Transaction transaction1 = new TransactionBuilder().setUsername("dummy").setDeliveryMethod("MOTOR").build();
-        Transaction transaction2 = new TransactionBuilder().setUsername("dummy").setDeliveryMethod("MOTOR").build();
+        Transaction transaction1 = new Transaction("dummy1", "BELANJAHEMAT20", "MOTOR");
+        Transaction transaction2 = new Transaction("dummy1", "BELANJAHEMAT20", "MOTOR");
         List<Transaction> transactions = new ArrayList<>();
         transactions.add(transaction1);
         transactions.add(transaction2);

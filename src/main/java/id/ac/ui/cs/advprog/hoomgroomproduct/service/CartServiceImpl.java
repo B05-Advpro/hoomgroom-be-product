@@ -13,8 +13,12 @@ import java.util.List;
 
 @Service
 public class CartServiceImpl implements CartService {
-    @Autowired
-    private CartRepository cartRepository;
+
+    private final CartRepository cartRepository;
+
+    public CartServiceImpl(CartRepository cartRepository) {
+        this.cartRepository = cartRepository;
+    }
 
     public Cart getCart(String username) {
         return cartRepository.findByUsername(username)

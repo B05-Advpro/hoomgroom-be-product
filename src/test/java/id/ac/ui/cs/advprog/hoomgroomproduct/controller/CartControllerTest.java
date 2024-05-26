@@ -82,7 +82,6 @@ class CartControllerTest {
     @Test
     void testGetCartInvalidToken() throws Exception {
         String username = request.getUsername();
-        Cart cart = new Cart(username);
 
         when(jwtService.isTokenValid(anyString())).thenReturn(false);
 
@@ -98,7 +97,6 @@ class CartControllerTest {
     @Test
     void testGetCartInvalidRole() throws Exception {
         String username = request.getUsername();
-        Cart cart = new Cart(username);
 
         when(jwtService.isTokenValid(anyString())).thenReturn(true);
         when(jwtService.extractRole(anyString())).thenReturn("ADMIN");

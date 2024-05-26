@@ -3,7 +3,6 @@ package id.ac.ui.cs.advprog.hoomgroomproduct.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import id.ac.ui.cs.advprog.hoomgroomproduct.dto.TransactionRequestDto;
 import id.ac.ui.cs.advprog.hoomgroomproduct.model.Transaction;
-import id.ac.ui.cs.advprog.hoomgroomproduct.model.TransactionBuilder;
 import id.ac.ui.cs.advprog.hoomgroomproduct.model.TransactionItem;
 import id.ac.ui.cs.advprog.hoomgroomproduct.service.JwtService;
 import id.ac.ui.cs.advprog.hoomgroomproduct.service.TransactionService;
@@ -45,13 +44,8 @@ class TransactionControllerTest {
                 "Meja", 25000, 2);
         items.add(product);
 
-        this.transaction = new TransactionBuilder()
-                .setItems(items)
-                .setPromoCodeUsed("BELANJAHEMAT20")
-                .setTotalPrice(40000)
-                .setUsername("dummy")
-                .setDeliveryMethod("MOTOR")
-                .build();
+        this.transaction = new Transaction("dummy", "BELANJAHEMAT20", "MOTOR",
+                items, 40000);
 
         this.request = new TransactionRequestDto();
         request.setUsername("dummy");
@@ -130,8 +124,8 @@ class TransactionControllerTest {
     void testGetAll() throws Exception {
         String username1 = "dummy1";
         String username2 = "dummy2";
-        Transaction transaction1 = new TransactionBuilder().setUsername(username1).setDeliveryMethod("MOTOR").build();
-        Transaction transaction2 = new TransactionBuilder().setUsername(username2).setDeliveryMethod("PESAWAT").build();
+        Transaction transaction1 = new Transaction(username1, "BELANJAHEMAT20", "MOTOR");
+        Transaction transaction2 = new Transaction(username2, "BELANJAHEMAT20", "PESAWAT");
 
         when(transactionService.getAll()).thenReturn(Arrays.asList(transaction1, transaction2));
 
@@ -154,8 +148,8 @@ class TransactionControllerTest {
     @Test
     void testGetTransactionByUsername() throws Exception {
         String username = "dummy";
-        Transaction transaction1 = new TransactionBuilder().setUsername(username).setDeliveryMethod("MOTOR").build();
-        Transaction transaction2 = new TransactionBuilder().setUsername(username).setDeliveryMethod("PESAWAT").build();
+        Transaction transaction1 = new Transaction(username, "BELANJAHEMAT20", "MOTOR");
+        Transaction transaction2 = new Transaction(username, "BELANJAHEMAT20", "PESAWAT");
 
         when(jwtService.isTokenValid(anyString())).thenReturn(true);
         when(jwtService.extractRole(anyString())).thenReturn("USER");
