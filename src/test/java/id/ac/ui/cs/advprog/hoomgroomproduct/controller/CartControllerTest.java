@@ -39,7 +39,7 @@ class CartControllerTest {
 
     @BeforeEach
     void setUp() {
-        String username = "anto";
+        String username = "dummy";
         String productId = "ca1c1b7d-f5aa-4573-aeff-d01665cc88c8";
         String name = "Meja";
         double price = 25000;

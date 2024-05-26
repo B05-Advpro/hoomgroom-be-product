@@ -41,7 +41,7 @@ class TransactionServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        this.username = "anto";
+        this.username = "dummy";
         String productId = "ca1c1b7d-f5aa-4573-aeff-d01665cc88c8";
         String name = "Meja";
         double price = 25000;
@@ -54,7 +54,7 @@ class TransactionServiceImplTest {
         this.cart.getItems().add(cartItem);
 
         this.request = new TransactionRequestDto();
-        request.setUsername("anto");
+        request.setUsername(this.username);
         request.setPromoCodeUsed("BELANJAHEMAT20");
         request.setDeliveryMethod("MOTOR");
 
@@ -159,8 +159,8 @@ class TransactionServiceImplTest {
 
     @Test
     void testGetAll() {
-        Transaction transaction1 = new TransactionBuilder().setUsername("anto").setDeliveryMethod("MOTOR").build();
-        Transaction transaction2 = new TransactionBuilder().setUsername("budi").setDeliveryMethod("MOTOR").build();
+        Transaction transaction1 = new TransactionBuilder().setUsername("dummy1").setDeliveryMethod("MOTOR").build();
+        Transaction transaction2 = new TransactionBuilder().setUsername("dummy2").setDeliveryMethod("MOTOR").build();
         List<Transaction> transactions = new ArrayList<>();
         transactions.add(transaction1);
         transactions.add(transaction2);
@@ -176,15 +176,15 @@ class TransactionServiceImplTest {
 
     @Test
     void testGetTransactionByUsername() {
-        Transaction transaction1 = new TransactionBuilder().setUsername("anto").setDeliveryMethod("MOTOR").build();
-        Transaction transaction2 = new TransactionBuilder().setUsername("anto").setDeliveryMethod("MOTOR").build();
+        Transaction transaction1 = new TransactionBuilder().setUsername("dummy").setDeliveryMethod("MOTOR").build();
+        Transaction transaction2 = new TransactionBuilder().setUsername("dummy").setDeliveryMethod("MOTOR").build();
         List<Transaction> transactions = new ArrayList<>();
         transactions.add(transaction1);
         transactions.add(transaction2);
 
-        when(transactionRepository.findByUsername("anto")).thenReturn(transactions);
+        when(transactionRepository.findByUsername("dummy")).thenReturn(transactions);
 
-        List<Transaction> savedTransactions = transactionService.getTransactionByUsername("anto");
+        List<Transaction> savedTransactions = transactionService.getTransactionByUsername("dummy");
         assertEquals(transactions, savedTransactions);
         for (int i = 0; i < transactions.size(); i++) {
             assertEquals(transactions.get(i).getUsername(), savedTransactions.get(i).getUsername());

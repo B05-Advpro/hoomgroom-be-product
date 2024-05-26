@@ -49,12 +49,12 @@ class TransactionControllerTest {
                 .setItems(items)
                 .setPromoCodeUsed("BELANJAHEMAT20")
                 .setTotalPrice(40000)
-                .setUsername("anto")
+                .setUsername("dummy")
                 .setDeliveryMethod("MOTOR")
                 .build();
 
         this.request = new TransactionRequestDto();
-        request.setUsername("anto");
+        request.setUsername("dummy");
         request.setPromoCodeUsed("BELANJAHEMAT20");
         request.setDeliveryMethod("MOTOR");
     }
@@ -128,8 +128,8 @@ class TransactionControllerTest {
 
     @Test
     void testGetAll() throws Exception {
-        String username1 = "anto";
-        String username2 = "budi";
+        String username1 = "dummy1";
+        String username2 = "dummy2";
         Transaction transaction1 = new TransactionBuilder().setUsername(username1).setDeliveryMethod("MOTOR").build();
         Transaction transaction2 = new TransactionBuilder().setUsername(username2).setDeliveryMethod("PESAWAT").build();
 
@@ -153,7 +153,7 @@ class TransactionControllerTest {
 
     @Test
     void testGetTransactionByUsername() throws Exception {
-        String username = "anto";
+        String username = "dummy";
         Transaction transaction1 = new TransactionBuilder().setUsername(username).setDeliveryMethod("MOTOR").build();
         Transaction transaction2 = new TransactionBuilder().setUsername(username).setDeliveryMethod("PESAWAT").build();
 
@@ -174,8 +174,8 @@ class TransactionControllerTest {
 
     @Test
     void testGetTransactionByusernameEmpty() throws Exception {
-        String username = "anto";
-
+        String username = "dummy";
+      
         when(jwtService.isTokenValid(anyString())).thenReturn(true);
         when(jwtService.extractRole(anyString())).thenReturn("USER");
         when(transactionService.getTransactionByUsername(username)).thenReturn(Collections.emptyList());
@@ -193,7 +193,7 @@ class TransactionControllerTest {
 
     @Test
     void testGetTransactionByUsernameInvalidToken() throws Exception {
-        String username = "anto";
+        String username = "dummy";
 
         when(jwtService.isTokenValid(anyString())).thenReturn(false);
 
@@ -208,7 +208,7 @@ class TransactionControllerTest {
 
     @Test
     void testGetTransactionByusernameInvalidRole() throws Exception {
-        String username = "anto";
+        String username = "dummy";
 
         when(jwtService.isTokenValid(anyString())).thenReturn(true);
         when(jwtService.extractRole(anyString())).thenReturn("ADMIN");

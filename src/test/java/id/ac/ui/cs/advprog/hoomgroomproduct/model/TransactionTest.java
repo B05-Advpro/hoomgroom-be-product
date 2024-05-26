@@ -27,7 +27,7 @@ class TransactionTest {
                 .setItems(this.items)
                 .setTotalPrice(130000)
                 .setPromoCodeUsed("BELANJAHEMAT20")
-                .setUsername("anto")
+                .setUsername("dummy")
                 .setDeliveryMethod("MOTOR")
                 .build();
     }
@@ -58,7 +58,7 @@ class TransactionTest {
 
     @Test
     void testGetUsername() {
-        assertEquals("anto", this.transaction.getUsername());
+        assertEquals("dummy", this.transaction.getUsername());
     }
 
     @Test
@@ -88,7 +88,7 @@ class TransactionTest {
                     .setItems(this.items)
                     .setTotalPrice(130000)
                     .setPromoCodeUsed("BELANJAHEMAT20")
-                    .setUsername("anto")
+                    .setUsername("dummy")
                     .setDeliveryMethod("BECAK")
                     .build();
         });

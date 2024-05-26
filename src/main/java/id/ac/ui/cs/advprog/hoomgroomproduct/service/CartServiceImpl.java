@@ -69,7 +69,6 @@ public class CartServiceImpl implements CartService {
         return cartRepository.save(cart);
     }
 
-
     public Cart clearCart(String username) {
         Cart cart = getCart(username);
         cart.getItems().clear();
