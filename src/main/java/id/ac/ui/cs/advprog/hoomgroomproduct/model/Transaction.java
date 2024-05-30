@@ -5,6 +5,7 @@ import id.ac.ui.cs.advprog.hoomgroomproduct.model.states.TransactionMenungguVeri
 import id.ac.ui.cs.advprog.hoomgroomproduct.model.states.TransactionStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 import java.util.UUID;
@@ -25,6 +26,8 @@ public class Transaction {
     private String deliveryCode;
     private String deliveryMethod;
 
+    @Getter
+    @Setter
     @Embedded
     private TransactionStatus transactionStatus;
 
@@ -57,4 +60,5 @@ public class Transaction {
             throw new IllegalArgumentException();
         }
     }
+
 }
