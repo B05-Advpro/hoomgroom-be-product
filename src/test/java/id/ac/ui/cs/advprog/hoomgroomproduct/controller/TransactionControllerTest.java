@@ -2,6 +2,7 @@ package id.ac.ui.cs.advprog.hoomgroomproduct.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import id.ac.ui.cs.advprog.hoomgroomproduct.dto.TransactionRequestDto;
+import id.ac.ui.cs.advprog.hoomgroomproduct.dto.TransactionStatusUpdateRequestDto;
 import id.ac.ui.cs.advprog.hoomgroomproduct.model.Transaction;
 import id.ac.ui.cs.advprog.hoomgroomproduct.model.TransactionItem;
 import id.ac.ui.cs.advprog.hoomgroomproduct.service.JwtService;
@@ -16,6 +17,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.*;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -169,7 +172,7 @@ class TransactionControllerTest {
     @Test
     void testGetTransactionByusernameEmpty() throws Exception {
         String username = "dummy";
-      
+
         when(jwtService.isTokenValid(anyString())).thenReturn(true);
         when(jwtService.extractRole(anyString())).thenReturn("USER");
         when(transactionService.getTransactionByUsername(username)).thenReturn(Collections.emptyList());
@@ -214,6 +217,28 @@ class TransactionControllerTest {
         verify(jwtService, times(1)).isTokenValid(anyString());
         verify(jwtService, times(1)).extractRole(anyString());
         verify(transactionService, times(0)).getTransactionByUsername(username);
+    }
+
+    @Test
+    void testNextStatusTransaction() throws Exception {
+        TransactionStatusUpdateRequestDto request = new TransactionStatusUpdateRequestDto();
+        request.setId("4f59c670-f83f-4d41-981f-37ee660a6e4c");
+
+        when(jwtService.isTokenValid(anyString())).thenReturn(true);
+        when(jwtService.extractRole(anyString())).thenReturn("ADMIN");
+
+        String role = jwtService.extractRole("test");
+
+        doReturn(this.transaction).when(transactionService).nextStatus(request, role);
+
+        mockMvc.perform(
+                    post("/transaction/next")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(asJsonString(request))
+                            .header("Authorization", "Bearer jwtToken")
+                    )
+                    .andExpect(status().isOk()
+                );
     }
 
     private static String asJsonString(final Object obj) {

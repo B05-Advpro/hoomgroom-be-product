@@ -1,7 +1,8 @@
 package id.ac.ui.cs.advprog.hoomgroomproduct.model;
 
 import id.ac.ui.cs.advprog.hoomgroomproduct.enums.DeliveryMethod;
-import id.ac.ui.cs.advprog.hoomgroomproduct.enums.DeliveryStatus;
+import id.ac.ui.cs.advprog.hoomgroomproduct.model.states.TransactionMenungguVerifikasi;
+import id.ac.ui.cs.advprog.hoomgroomproduct.model.states.TransactionStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,9 +29,13 @@ public class Transaction {
     private LocalDateTime createdAt;
     private String promoCodeUsed;
     private String username;
-    private String deliveryStatus;
     private String deliveryCode;
     private String deliveryMethod;
+
+    @Getter
+    @Setter
+    @Embedded
+    private TransactionStatus transactionStatus;
 
     public Transaction(String username, String promoCodeUsed, String deliveryMethod, List<TransactionItem> items, double totalPrice) {
         this.items = items;
@@ -38,20 +43,13 @@ public class Transaction {
         this.totalPrice = totalPrice;
         this.username = username;
         this.promoCodeUsed = promoCodeUsed;
-        this.deliveryStatus = DeliveryStatus.MENUNGGU_VERIFIKASI.getValue();
         this.deliveryCode = "";
         this.setDeliveryMethod(deliveryMethod);
-    }
-    public Transaction(String username, String promoCodeUsed, String deliveryMethod) {
-        this(username, promoCodeUsed, deliveryMethod, new ArrayList<>(), 0);
+        this.transactionStatus = new TransactionMenungguVerifikasi();
     }
 
-    public void setDeliveryStatus(String status) {
-        if (DeliveryStatus.contains(status)) {
-            this.deliveryStatus = status;
-        } else {
-            throw new IllegalArgumentException();
-        }
+    public Transaction(String username, String promoCodeUsed, String deliveryMethod) {
+        this(username, promoCodeUsed, deliveryMethod, new ArrayList<>(), 0);
     }
 
     public void setDeliveryMethod(String method) {
