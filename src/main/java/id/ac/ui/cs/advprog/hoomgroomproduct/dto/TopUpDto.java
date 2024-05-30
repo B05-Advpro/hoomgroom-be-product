@@ -5,8 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class TransactionRequestDto {
+public class TopUpDto {
     private String username;
-    private String promoCodeUsed;
-    private String deliveryMethod;
+    private double amount;
 }

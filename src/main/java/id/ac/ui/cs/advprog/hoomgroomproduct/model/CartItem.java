@@ -9,22 +9,24 @@ import lombok.Setter;
 @Getter
 @Entity
 @NoArgsConstructor
-public class TransactionItem {
+public class CartItem {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
     private String productId;
     private String name;
     private double price;
+
+    @Setter
     private int quantity;
 
     @Setter
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "username")
-    private Transaction transaction;
+    private Cart cart;
 
-    public TransactionItem(String productId, String name, double price, int quantity) {
+    public CartItem(String productId, String name, double price, int quantity) {
         this.productId = productId;
         this.name = name;
         this.price = price;

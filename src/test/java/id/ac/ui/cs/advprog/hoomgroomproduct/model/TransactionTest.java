@@ -9,51 +9,36 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 class TransactionTest {
     Transaction transaction;
-    List<TransactionItem> products;
+    List<TransactionItem> items;
 
 
     @BeforeEach
     void setUp() {
-        this.products = new ArrayList<>();
-        TransactionItem product1 = new TransactionItem(UUID.fromString("ca1c1b7d-f5aa-4573-aeff-d01665cc88c8"),
+        this.items = new ArrayList<>();
+        TransactionItem product1 = new TransactionItem("ca1c1b7d-f5aa-4573-aeff-d01665cc88c8",
                 "Product 1", 15000, 2);
-        TransactionItem product2 = new TransactionItem(UUID.fromString("df6c1b7d-f5aa-4573-aeff-d01665cc88c8"),
+        TransactionItem product2 = new TransactionItem("df6c1b7d-f5aa-4573-aeff-d01665cc88c8",
                 "Product 2", 25000, 4);
-        this.products.add(product1);
-        this.products.add(product2);
+        this.items.add(product1);
+        this.items.add(product2);
 
-        this.transaction = new TransactionBuilder()
-                .setProducts(this.products)
-                .setTotalPrice(130000)
-                .setPromoCodeUsed("BELANJAHEMAT20")
-                .setPembeli(UUID.fromString("4f59c670-f83f-4d41-981f-37ee660a6e4c"))
-                .setDeliveryMethod("MOTOR")
-                .build();
+        this.transaction = new Transaction("dummy", "BELANJAHEMAT20", "MOTOR",
+                this.items, 130000);
     }
 
     @Test
     void testGetProducts() {
-        List<TransactionItem> savedProducts = this.transaction.getProducts();
-        assertSame(this.products, savedProducts);
-        assertEquals(this.products.size(), savedProducts.size());
-        for (int i = 0; i < this.products.size(); i++) {
-            assertSame(this.products.get(i), savedProducts.get(i));
+        List<TransactionItem> savedProducts = this.transaction.getItems();
+        assertSame(this.items, savedProducts);
+        assertEquals(this.items.size(), savedProducts.size());
+        for (int i = 0; i < this.items.size(); i++) {
+            assertEquals(this.items.get(i), savedProducts.get(i));
         }
     }
 
     @Test
-    void testGetProductsEmpty() {
-        this.products.clear();
-
-        assertThrows(IllegalArgumentException.class, () -> {
-            this.transaction = new TransactionBuilder()
-                    .setProducts(this.products)
-                    .setTotalPrice(130000)
-                    .setPromoCodeUsed("BELANJAHEMAT20")
-                    .setPembeli(UUID.fromString("4f59c670-f83f-4d41-981f-37ee660a6e4c"))
-                    .setDeliveryMethod("MOTOR")
-                    .build();
-        });
+    void testCreatedAt() {
+        assertNotNull(this.transaction.getCreatedAt());
     }
 
     @Test
@@ -66,8 +51,8 @@ class TransactionTest {
     }
 
     @Test
-    void testGetPembeli() {
-        assertEquals(UUID.fromString("4f59c670-f83f-4d41-981f-37ee660a6e4c"), this.transaction.getPembeli());
+    void testGetUsername() {
+        assertEquals("dummy", this.transaction.getUsername());
     }
 
     @Test
@@ -82,14 +67,7 @@ class TransactionTest {
 
     @Test
     void testInvalidDeliveryMethod() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            this.transaction = new TransactionBuilder()
-                    .setProducts(this.products)
-                    .setTotalPrice(130000)
-                    .setPromoCodeUsed("BELANJAHEMAT20")
-                    .setPembeli(UUID.fromString("4f59c670-f83f-4d41-981f-37ee660a6e4c"))
-                    .setDeliveryMethod("BECAK")
-                    .build();
-        });
+        assertThrows(IllegalArgumentException.class, () -> new Transaction("dummy",
+                "BELANJAHEMAT20", "BECAK", this.items, 130000));
     }
 }
