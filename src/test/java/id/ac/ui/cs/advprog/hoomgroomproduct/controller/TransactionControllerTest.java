@@ -224,13 +224,20 @@ class TransactionControllerTest {
         TransactionStatusUpdateRequestDto request = new TransactionStatusUpdateRequestDto();
         request.setId("4f59c670-f83f-4d41-981f-37ee660a6e4c");
 
-        doReturn(this.transaction).when(transactionService).nextStatus(request);
+        when(jwtService.isTokenValid(anyString())).thenReturn(true);
+        when(jwtService.extractRole(anyString())).thenReturn("ADMIN");
+
+        String role = jwtService.extractRole("test");
+
+        doReturn(this.transaction).when(transactionService).nextStatus(request, role);
 
         mockMvc.perform(
-                        post("/transaction/next")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(asJsonString(request)))
-                .andExpect(status().isOk()
+                    post("/transaction/next")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(asJsonString(request))
+                            .header("Authorization", "Bearer jwtToken")
+                    )
+                    .andExpect(status().isOk()
                 );
     }
 

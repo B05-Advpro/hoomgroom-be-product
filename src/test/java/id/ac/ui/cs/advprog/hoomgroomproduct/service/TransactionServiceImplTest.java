@@ -207,9 +207,11 @@ class TransactionServiceImplTest {
         TransactionStatusUpdateRequestDto request = new TransactionStatusUpdateRequestDto();
         request.setId("4f59c670-f83f-4d41-981f-37ee660a6e4c");
 
+        String role = "ADMIN";
+
         assertSame(TransactionMenungguVerifikasi.class, transaction.getTransactionStatus().getClass());
 
-        transaction = this.transactionService.nextStatus(request);
+        transaction = this.transactionService.nextStatus(request, role);
 
         assertSame(TransactionDiproses.class, transaction.getTransactionStatus().getClass());
     }
@@ -219,6 +221,8 @@ class TransactionServiceImplTest {
         TransactionStatusUpdateRequestDto request = new TransactionStatusUpdateRequestDto();
         request.setId("4f59c670-f83f-4d41-981f-37ee660a6e4c");
 
-        assertThrows(IllegalArgumentException.class, () -> this.transactionService.nextStatus(request));
+        String role = "ADMIN";
+
+        assertThrows(IllegalArgumentException.class, () -> this.transactionService.nextStatus(request, role));
     }
 }
