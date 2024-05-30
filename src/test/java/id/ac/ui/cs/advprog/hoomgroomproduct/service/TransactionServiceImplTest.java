@@ -2,9 +2,12 @@ package id.ac.ui.cs.advprog.hoomgroomproduct.service;
 
 import id.ac.ui.cs.advprog.hoomgroomproduct.dto.TransactionItemRequestDto;
 import id.ac.ui.cs.advprog.hoomgroomproduct.dto.TransactionRequestDto;
+import id.ac.ui.cs.advprog.hoomgroomproduct.dto.TransactionStatusUpdateRequestDto;
 import id.ac.ui.cs.advprog.hoomgroomproduct.model.Transaction;
 import id.ac.ui.cs.advprog.hoomgroomproduct.model.TransactionBuilder;
 import id.ac.ui.cs.advprog.hoomgroomproduct.model.TransactionItem;
+import id.ac.ui.cs.advprog.hoomgroomproduct.model.states.TransactionDiproses;
+import id.ac.ui.cs.advprog.hoomgroomproduct.model.states.TransactionMenungguVerifikasi;
 import id.ac.ui.cs.advprog.hoomgroomproduct.repository.TransactionRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -71,5 +75,28 @@ class TransactionServiceImplTest {
         assertEquals(this.transaction.getPromoCodeUsed(), result.getPromoCodeUsed());
         assertEquals(this.transaction.getPembeli(), result.getPembeli());
         assertEquals(this.transaction.getDeliveryMethod(), result.getDeliveryMethod());
+    }
+
+    @Test
+    void testNextStatusTransactionSuccess() {
+        when(transactionRepository.findById(any())).thenReturn(Optional.of(this.transaction));
+        when(transactionRepository.save(any())).thenReturn(this.transaction);
+
+        TransactionStatusUpdateRequestDto request = new TransactionStatusUpdateRequestDto();
+        request.setId("4f59c670-f83f-4d41-981f-37ee660a6e4c");
+
+        assertSame(TransactionMenungguVerifikasi.class, this.transaction.getTransactionStatus().getClass());
+
+        this.transaction = this.transactionService.nextStatus(request);
+
+        assertSame(TransactionDiproses.class, this.transaction.getTransactionStatus().getClass());
+    }
+
+    @Test
+    void testNextStatusTransactionIdNotFound() {
+        TransactionStatusUpdateRequestDto request = new TransactionStatusUpdateRequestDto();
+        request.setId("4f59c670-f83f-4d41-981f-37ee660a6e4c");
+
+        assertThrows(IllegalArgumentException.class, () -> this.transactionService.nextStatus(request));
     }
 }
