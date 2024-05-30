@@ -1,7 +1,13 @@
 package id.ac.ui.cs.advprog.hoomgroomproduct.service;
 
 import id.ac.ui.cs.advprog.hoomgroomproduct.dto.TransactionRequestDto;
-import id.ac.ui.cs.advprog.hoomgroomproduct.model.*;
+import id.ac.ui.cs.advprog.hoomgroomproduct.dto.TransactionStatusUpdateRequestDto;
+import id.ac.ui.cs.advprog.hoomgroomproduct.model.Cart;
+import id.ac.ui.cs.advprog.hoomgroomproduct.model.CartItem;
+import id.ac.ui.cs.advprog.hoomgroomproduct.model.Transaction;
+import id.ac.ui.cs.advprog.hoomgroomproduct.model.TransactionItem;
+import id.ac.ui.cs.advprog.hoomgroomproduct.model.states.TransactionDiproses;
+import id.ac.ui.cs.advprog.hoomgroomproduct.model.states.TransactionMenungguVerifikasi;
 import id.ac.ui.cs.advprog.hoomgroomproduct.repository.TransactionRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -87,9 +93,7 @@ class TransactionServiceImplTest {
 
         when(cartService.getCart(this.username)).thenReturn(cart);
 
-        Exception e = assertThrows(IllegalStateException.class, () -> {
-            transactionService.create(this.request, this.token);
-        });
+        Exception e = assertThrows(IllegalStateException.class, () -> transactionService.create(this.request, this.token));
 
         assertEquals("Cart is empty", e.getMessage());
 
@@ -104,9 +108,7 @@ class TransactionServiceImplTest {
 
         when(cartService.getCart(this.username)).thenReturn(cart);
 
-        Exception e = assertThrows(IllegalStateException.class, () -> {
-            transactionService.create(this.request, this.token);
-        });
+        Exception e = assertThrows(IllegalStateException.class, () -> transactionService.create(this.request, this.token));
 
         assertEquals("Not enough balance in wallet", e.getMessage());
         verify(cartService, times(1)).getCart(this.username);
@@ -189,5 +191,34 @@ class TransactionServiceImplTest {
         for (int i = 0; i < transactions.size(); i++) {
             assertEquals(transactions.get(i).getUsername(), savedTransactions.get(i).getUsername());
         }
+    }
+
+    @Test
+    void testNextStatusTransactionSuccess() {
+        Transaction transaction = new Transaction("dummy1", "BELANJAHEMAT20", "MOTOR");
+        
+        when(transactionRepository.findById(any())).thenReturn(Optional.of(transaction));
+        when(transactionRepository.save(any())).thenReturn(transaction);
+
+        TransactionStatusUpdateRequestDto request = new TransactionStatusUpdateRequestDto();
+        request.setId("4f59c670-f83f-4d41-981f-37ee660a6e4c");
+
+        String role = "ADMIN";
+
+        assertSame(TransactionMenungguVerifikasi.class, transaction.getTransactionStatus().getClass());
+
+        transaction = this.transactionService.nextStatus(request, role);
+
+        assertSame(TransactionDiproses.class, transaction.getTransactionStatus().getClass());
+    }
+
+    @Test
+    void testNextStatusTransactionIdNotFound() {
+        TransactionStatusUpdateRequestDto request = new TransactionStatusUpdateRequestDto();
+        request.setId("4f59c670-f83f-4d41-981f-37ee660a6e4c");
+
+        String role = "ADMIN";
+
+        assertThrows(IllegalArgumentException.class, () -> this.transactionService.nextStatus(request, role));
     }
 }

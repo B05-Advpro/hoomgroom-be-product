@@ -1,7 +1,6 @@
 package id.ac.ui.cs.advprog.hoomgroomproduct.model;
 
 import id.ac.ui.cs.advprog.hoomgroomproduct.enums.DeliveryMethod;
-import id.ac.ui.cs.advprog.hoomgroomproduct.enums.DeliveryStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -54,16 +53,6 @@ class TransactionTest {
     @Test
     void testGetUsername() {
         assertEquals("dummy", this.transaction.getUsername());
-    }
-
-    @Test
-    void testGetDeliveryStatus() {
-        assertEquals(DeliveryStatus.MENUNGGU_VERIFIKASI.getValue(), this.transaction.getDeliveryStatus());
-    }
-
-    @Test
-    void testSetInvalidDeliveryStatus() {
-        assertThrows(IllegalArgumentException.class, () -> this.transaction.setDeliveryStatus("MEOW"));
     }
 
     @Test

@@ -1,6 +1,7 @@
 package id.ac.ui.cs.advprog.hoomgroomproduct.controller;
 
 import id.ac.ui.cs.advprog.hoomgroomproduct.dto.TransactionRequestDto;
+import id.ac.ui.cs.advprog.hoomgroomproduct.dto.TransactionStatusUpdateRequestDto;
 import id.ac.ui.cs.advprog.hoomgroomproduct.model.Transaction;
 import id.ac.ui.cs.advprog.hoomgroomproduct.service.JwtService;
 import id.ac.ui.cs.advprog.hoomgroomproduct.service.TransactionService;
@@ -55,5 +56,18 @@ public class TransactionController {
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<String> handleIllegalStateException(IllegalStateException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
+
+    @PostMapping("/next")
+    public ResponseEntity<Transaction> nextStatusTransaction(@RequestHeader(value = "Authorization") String token,
+                                                             @RequestBody TransactionStatusUpdateRequestDto request) {
+        token = token.substring(7);
+        if (!jwtService.isTokenValid(token)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+        }
+
+        String role = jwtService.extractRole(token);
+        Transaction transaction = transactionService.nextStatus(request, role);
+        return ResponseEntity.ok(transaction);
     }
 }

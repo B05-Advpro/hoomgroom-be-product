@@ -86,8 +86,8 @@ class CartServiceImplTest {
 
         List<CartItem> items = savedCart.getItems();
         assertEquals(1, items.size());
-        assertEquals(this.cartDto.getProductId(), items.get(0).getProductId());
-        assertEquals(this.cartDto.getQuantity(), items.get(0).getQuantity());
+        assertEquals(this.cartDto.getProductId(), items.getFirst().getProductId());
+        assertEquals(this.cartDto.getQuantity(), items.getFirst().getQuantity());
         assertEquals(25000, savedCart.getTotalPrice());
         verify(cartRepository, times(1)).findByUsername(this.username);
         verify(cartRepository, times(1)).save(this.cart);
@@ -107,8 +107,8 @@ class CartServiceImplTest {
 
         List<CartItem> items = savedCart.getItems();
         assertEquals(1, items.size());
-        assertEquals(this.cartDto.getProductId(), items.get(0).getProductId());
-        assertEquals(initialQuantity + newQuantity, items.get(0).getQuantity());
+        assertEquals(this.cartDto.getProductId(), items.getFirst().getProductId());
+        assertEquals(initialQuantity + newQuantity, items.getFirst().getQuantity());
         assertEquals(100000, savedCart.getTotalPrice());
         verify(cartRepository, times(1)).findByUsername(username);
         verify(cartRepository, times(1)).save(cart);
