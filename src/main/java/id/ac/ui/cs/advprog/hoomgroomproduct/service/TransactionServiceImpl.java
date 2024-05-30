@@ -5,6 +5,7 @@ import id.ac.ui.cs.advprog.hoomgroomproduct.model.*;
 import id.ac.ui.cs.advprog.hoomgroomproduct.dto.TransactionStatusUpdateRequestDto;
 import id.ac.ui.cs.advprog.hoomgroomproduct.model.Transaction;
 import id.ac.ui.cs.advprog.hoomgroomproduct.model.TransactionItem;
+import id.ac.ui.cs.advprog.hoomgroomproduct.model.states.TransactionTiba;
 import id.ac.ui.cs.advprog.hoomgroomproduct.repository.TransactionRepository;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -104,7 +105,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public Transaction nextStatus(TransactionStatusUpdateRequestDto request) {
+    public Transaction nextStatus(TransactionStatusUpdateRequestDto request, String role) {
         String transactionId = request.getId();
         Optional<Transaction> optionalTransaction = transactionRepository.findById(transactionId);
 
@@ -113,7 +114,17 @@ public class TransactionServiceImpl implements TransactionService {
         }
 
         Transaction transaction = optionalTransaction.get();
-        transaction.setTransactionStatus(transaction.getTransactionStatus().nextStatus());
+
+        if (transaction.getTransactionStatus().getClass() == TransactionTiba.class) {
+            if (role.equals("USER")) {
+                transaction.setTransactionStatus(transaction.getTransactionStatus().nextStatus());
+            }
+        } else {
+            if (role.equals("ADMIN")) {
+                transaction.setTransactionStatus(transaction.getTransactionStatus().nextStatus());
+            }
+        }
+
         transactionRepository.save(transaction);
 
         return transaction;

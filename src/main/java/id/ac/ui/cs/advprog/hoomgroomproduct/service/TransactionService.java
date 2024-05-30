@@ -18,5 +18,5 @@ public interface TransactionService {
      *
      * @return a TransactionStatus object representing new transaction state.
      */
-    Transaction nextStatus(TransactionStatusUpdateRequestDto request);
+    Transaction nextStatus(TransactionStatusUpdateRequestDto request, String role);
 }

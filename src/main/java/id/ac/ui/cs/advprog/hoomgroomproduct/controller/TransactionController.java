@@ -59,8 +59,15 @@ public class TransactionController {
     }
 
     @PostMapping("/next")
-    public ResponseEntity<Transaction> nextStatusTransaction(@RequestBody TransactionStatusUpdateRequestDto request) {
-        Transaction transaction = transactionService.nextStatus(request);
+    public ResponseEntity<Transaction> nextStatusTransaction(@RequestHeader(value = "Authorization") String token,
+                                                             @RequestBody TransactionStatusUpdateRequestDto request) {
+        token = token.substring(7);
+        if (!jwtService.isTokenValid(token)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+        }
+
+        String role = jwtService.extractRole(token);
+        Transaction transaction = transactionService.nextStatus(request, role);
         return ResponseEntity.ok(transaction);
     }
 }
