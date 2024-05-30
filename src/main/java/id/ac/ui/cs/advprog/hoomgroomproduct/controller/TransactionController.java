@@ -1,6 +1,7 @@
 package id.ac.ui.cs.advprog.hoomgroomproduct.controller;
 
 import id.ac.ui.cs.advprog.hoomgroomproduct.dto.TransactionRequestDto;
+import id.ac.ui.cs.advprog.hoomgroomproduct.dto.TransactionStatusUpdateRequestDto;
 import id.ac.ui.cs.advprog.hoomgroomproduct.model.Transaction;
 import id.ac.ui.cs.advprog.hoomgroomproduct.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,12 @@ public class TransactionController {
     @PostMapping("/create")
     public ResponseEntity<Transaction> createTransaction(@RequestBody TransactionRequestDto request) {
         Transaction transaction = transactionService.create(request);
+        return ResponseEntity.ok(transaction);
+    }
+
+    @PostMapping("/next")
+    public ResponseEntity<Transaction> nextStatusTransaction(@RequestBody TransactionStatusUpdateRequestDto request) {
+        Transaction transaction = transactionService.nextStatus(request);
         return ResponseEntity.ok(transaction);
     }
 }
