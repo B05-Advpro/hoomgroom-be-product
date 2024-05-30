@@ -3,6 +3,7 @@ package id.ac.ui.cs.advprog.hoomgroomproduct.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import id.ac.ui.cs.advprog.hoomgroomproduct.dto.TransactionItemRequestDto;
 import id.ac.ui.cs.advprog.hoomgroomproduct.dto.TransactionRequestDto;
+import id.ac.ui.cs.advprog.hoomgroomproduct.dto.TransactionStatusUpdateRequestDto;
 import id.ac.ui.cs.advprog.hoomgroomproduct.model.Transaction;
 import id.ac.ui.cs.advprog.hoomgroomproduct.model.TransactionBuilder;
 import id.ac.ui.cs.advprog.hoomgroomproduct.model.TransactionItem;
@@ -16,6 +17,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 
+import javax.print.attribute.standard.Media;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -73,6 +75,21 @@ class TransactionControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(request)))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void testNextStatusTransaction() throws Exception {
+        TransactionStatusUpdateRequestDto request = new TransactionStatusUpdateRequestDto();
+        request.setId("4f59c670-f83f-4d41-981f-37ee660a6e4c");
+
+        doReturn(this.transaction).when(transactionService).nextStatus(request);
+
+        mockMvc.perform(
+                post("/transaction/next")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(request)))
+                        .andExpect(status().isOk()
+        );
     }
 
     private static String asJsonString(final Object obj) {
