@@ -93,9 +93,7 @@ class TransactionServiceImplTest {
 
         when(cartService.getCart(this.username)).thenReturn(cart);
 
-        Exception e = assertThrows(IllegalStateException.class, () -> {
-            transactionService.create(this.request, this.token);
-        });
+        Exception e = assertThrows(IllegalStateException.class, () -> transactionService.create(this.request, this.token));
 
         assertEquals("Cart is empty", e.getMessage());
 
@@ -110,9 +108,7 @@ class TransactionServiceImplTest {
 
         when(cartService.getCart(this.username)).thenReturn(cart);
 
-        Exception e = assertThrows(IllegalStateException.class, () -> {
-            transactionService.create(this.request, this.token);
-        });
+        Exception e = assertThrows(IllegalStateException.class, () -> transactionService.create(this.request, this.token));
 
         assertEquals("Not enough balance in wallet", e.getMessage());
         verify(cartService, times(1)).getCart(this.username);

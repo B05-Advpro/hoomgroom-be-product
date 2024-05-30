@@ -5,9 +5,9 @@ import id.ac.ui.cs.advprog.hoomgroomproduct.dto.TopUpDto;
 import id.ac.ui.cs.advprog.hoomgroomproduct.model.Cart;
 
 public interface CartService {
-    public Cart getCart(String username);
-    public Cart addItemToCart(CartDto request);
-    public Cart deleteItemFromCart(CartDto request);
-    public Cart clearCart(String username);
-    public Cart topUpWallet(TopUpDto request);
+    Cart getCart(String username);
+    Cart addItemToCart(CartDto request);
+    Cart deleteItemFromCart(CartDto request);
+    Cart clearCart(String username);
+    Cart topUpWallet(TopUpDto request);
 }

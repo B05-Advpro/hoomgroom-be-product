@@ -1,8 +1,9 @@
 package id.ac.ui.cs.advprog.hoomgroomproduct.service;
 
 import id.ac.ui.cs.advprog.hoomgroomproduct.dto.TransactionRequestDto;
-import id.ac.ui.cs.advprog.hoomgroomproduct.model.*;
 import id.ac.ui.cs.advprog.hoomgroomproduct.dto.TransactionStatusUpdateRequestDto;
+import id.ac.ui.cs.advprog.hoomgroomproduct.model.Cart;
+import id.ac.ui.cs.advprog.hoomgroomproduct.model.CartItem;
 import id.ac.ui.cs.advprog.hoomgroomproduct.model.Transaction;
 import id.ac.ui.cs.advprog.hoomgroomproduct.model.TransactionItem;
 import id.ac.ui.cs.advprog.hoomgroomproduct.model.states.TransactionTiba;
@@ -13,10 +14,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 import java.util.*;
 
 @Service
